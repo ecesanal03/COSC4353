@@ -51,7 +51,7 @@
         }
 
         #volunteerTable {
-            display: none; /* Hide the table by default */
+            display: none;
         }
 
         button {
@@ -75,18 +75,16 @@
         function toggleTableVisibility() {
             const table = document.getElementById('volunteerTable');
             if (table.style.display === 'none' || table.style.display === '') {
-                table.style.display = 'table'; // Show the table
+                table.style.display = 'table';  //show table
             } else {
-                table.style.display = 'none'; // Hide the table
+                table.style.display = 'none';   //hide table
             }
         }
     </script>
 </head>
 <body>
-    <!-- Button to Show/Hide Table -->
     <button onclick="toggleTableVisibility()">Volunteer History</button>
 
-    <!-- Volunteer Table -->
     <table id="volunteerTable">
         <caption>Volunteer History Records</caption>
         <thead>
