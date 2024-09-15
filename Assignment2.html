@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Management</title>
+    <link rel="stylesheet" href="main-page.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- Sidebar on the left -->
+        <aside class="sidebar"></aside>
+
+        <!-- Main content area -->
+        <main>
+            <header>
+                <h1>Complete Your Profile</h1>
+            </header>
+
+            <form id="profile-form">
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" maxlength="50" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address1">Address 1 *</label>
+                    <input type="text" id="address1" name="address1" maxlength="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="address2">Address 2</label>
+                    <input type="text" id="address2" name="address2" maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    <input type="text" id="city" name="city" maxlength="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="state">State *</label>
+                    <select id="state" name="state" required>
+                        <option value="">Select State</option>
+                        <option value="AL">AL</option>
+                        <option value="CA">CA</option>
+                        <option value="NY">NY</option>
+                        <!-- Add more states as needed -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="zipCode">Zip Code *</label>
+                    <input type="text" id="zipCode" name="zipCode" maxlength="9" minlength="5" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="skills">Skills *</label>
+                    <select id="skills" name="skills" multiple required>
+                        <option value="IT">IT</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Teaching">Teaching</option>
+                        <!-- Add more skills as needed -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="preferences">Preferences</label>
+                    <textarea id="preferences" name="preferences" maxlength="500"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="availability">Availability *</label>
+                    <input type="date" id="availability" name="availability" multiple required>
+                </div>
+
+                <button type="submit">Save Profile</button>
+            </form>
+        </main>
+    </div>
+
+</body>
+</html>
