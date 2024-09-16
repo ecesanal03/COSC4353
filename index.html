@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <script src="this.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>FormMatcher</title>
 </head> 
 
@@ -17,7 +18,7 @@
     <div id="formMatching">
         <div>
             <h1 id="formMatchingHeader">
-                <span class="formMatchingBar">-</span> Form Matching <span class="formMatchingBar">-</span>
+                <span class="formMatchingBar"></span> <i>Form Matching</i> <span class="formMatchingBar"></span>
             </h1>
         </div>
 
@@ -26,11 +27,12 @@
         </section>
         <template class="data-template">
             <div class="card">
-                <!-- Corrected class attribute typos -->
-                <div class="eventImage" style="width:100%; height:auto;"></div>
-                <div class="eventName"></div>
-                <div class="eventLocation"></div>
-                <div class="eventTime"></div>
+                <div class="eventImageHolder"><img class="eventImage" src="https://preview.redd.it/i-got-bored-so-i-decided-to-draw-a-random-image-on-the-v0-4ig97vv85vjb1.png?width=1080&crop=smart&auto=webp&s=28c3ad73cff636f7ba478a0c19d734cd538949d4" alt="testfixture" ></div>
+                <div class="cardText">
+                    <div class="eventName" ID="" data-RSVP="" style="font-weight: bolder;"></div>
+                    <div class="eventLocation"></div>
+                    <div class="eventTime"></div>
+                </div>
             </div>
         </template>
     </div>
