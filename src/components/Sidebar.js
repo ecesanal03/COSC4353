@@ -1,41 +1,51 @@
 // Sidebar.js
 import React from 'react';
-import { FaCalendarAlt, FaUsers, FaHistory, FaHome, FaSignOutAlt, FaUser } from 'react-icons/fa'; // Import icons
-import { Link } from 'react-router-dom';
+import { FaCalendarAlt, FaUsers, FaHistory, FaHome, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
-  return (
-    <div style={styles.sidebarContainer}>
-      <h2 style={styles.logo}>Volunteer Management</h2>
-      <ul style={styles.navList}>
-        <li style={styles.navItem}>
-          <FaHome style={styles.icon} />
-          <Link to="/dashboard" style={styles.navLink}>Dashboard</Link>
-        </li>
-        <li style={styles.navItem}>
-          <FaUser style={styles.icon} />
-          <Link to="/profile" style={styles.navLink}>Profile</Link>
-        </li>
-        <li style={styles.navItem}>
-          <FaCalendarAlt style={styles.icon} />
-          <Link to="/event-management" style={styles.navLink}>Event Management</Link>
-        </li>
-        <li style={styles.navItem}>
-          <FaUsers style={styles.icon} />
-          <Link to="/volunteer-matching" style={styles.navLink}>Volunteer Matching</Link>
-        </li>
-        <li style={styles.navItem}>
-          <FaHistory style={styles.icon} />
-          <Link to="/volunteer-history" style={styles.navLink}>Volunteer History</Link>
-        </li>
-        <li style={styles.navItem}>
-          <FaSignOutAlt style={styles.icon} />
-          <Link to="/logout" style={styles.navLink}>Logout</Link>
-        </li>
-      </ul>
-    </div>
-  );
-};
+    const navigate = useNavigate();
+  
+    const handleLogout = () => {
+      // Clear session or auth data if needed (e.g., localStorage.clear())
+      localStorage.removeItem('authToken'); // Example: removing a token
+  
+      // Redirect to the login page
+      navigate('/');
+    };
+  
+    return (
+      <div style={styles.sidebarContainer}>
+        <h2 style={styles.logo}>My App</h2>
+        <ul style={styles.navList}>
+          <li style={styles.navItem}>
+            <FaHome style={styles.icon} />
+            <Link to="/dashboard" style={styles.navLink}>Dashboard</Link>
+          </li>
+          <li style={styles.navItem}>
+            <FaUser style={styles.icon} />
+            <Link to="/profile" style={styles.navLink}>Profile</Link>
+          </li>
+          <li style={styles.navItem}>
+            <FaCalendarAlt style={styles.icon} />
+            <Link to="/event-management" style={styles.navLink}>Event Management</Link>
+          </li>
+          <li style={styles.navItem}>
+            <FaUsers style={styles.icon} />
+            <Link to="/volunteer-matching" style={styles.navLink}>Volunteer Matching</Link>
+          </li>
+          <li style={styles.navItem}>
+            <FaHistory style={styles.icon} />
+            <Link to="/volunteer-history" style={styles.navLink}>Volunteer History</Link>
+          </li>
+          <li style={styles.navItem} onClick={handleLogout}>
+            <FaSignOutAlt style={styles.icon} />
+            <span style={styles.navLink}>Logout</span>
+          </li>
+        </ul>
+      </div>
+    );
+  };
 
 const styles = {
   sidebarContainer: {
