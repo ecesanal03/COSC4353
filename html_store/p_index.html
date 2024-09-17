@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Volunteer Voyage</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <header>Event Management Form</header>
+    <div class="form-container">
+        <form action="submit.php" method="post">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div>
+                <label for="event">Event:</label>
+                <input type="text" id="event" name="event" required>
+            </div>
+            <div>
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+            <div>
+                <label for="time">Time:</label>
+                <input type="time" id="time" name="time" required>
+            </div>
+            <div>
+                <label for="location">Location:</label>
+                <textarea id="location" name="location" required></textarea>
+            </div>
+            <div class="skills-section">
+                <label for="skills">Required Skills:</label>
+                <select id="skills" name="skills" multiple required>
+                    <option value="1">Skill 1</option>
+                    <option value="2">Skill 2</option>
+                    <option value="3">Skill 3</option>
+                    <option value="4">Skill 4</option>
+                    <option value="5">Skill 5</option>
+                </select>
+            </div>
+            <div>
+                <label for="urgency">Urgency:</label>
+                <select id="urgency" name="urgency" required>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            
+            <div>   
+                <input type="submit" value="Submit">
+            </div>
+        </form>
+    </div>
+</body>
+</html>                        
