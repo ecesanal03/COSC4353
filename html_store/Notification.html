@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .notification-container {
+            width: 300px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .notification {
+            background-color: #81C3D7;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 0;
+        }
+
+        .notification.show {
+            opacity: 1;
+        }
+
+        .notification h4 {
+            margin: 0;
+            font-size: 16px;
+            color: #2e2c2c;
+        }
+
+        .notification p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #4a4747;
+        }
+
+        .close-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #595252;
+        }
+        .close-btn:hover {
+            color: #000000;
+        }
+
+        .history-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #3A7CA5;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1000;
+
+            /*change button location here*/
+            position:absolute;
+            top: 300px;
+            left: 10px;
+        }
+
+        .history-button:hover {
+            background-color: #2a5c7c;
+        }
+
+        .history-container {
+            display: none;
+            width: 320px;
+            max-height: 500px;
+            overflow-y: auto;
+            background-color: #81C3D7;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+
+            /*change container location here*/
+            position:absolute;
+            top: 100px;
+            left: 500px;
+        }
+
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #ffffff;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item h4 {
+            margin: 1px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .history-item p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #3d3a3a;
+        }
+    </style>
+</head>
+<body>
+
+<button class="history-button" onclick="toggleHistory()">View Notification History</button>
+<div class="notification-container" id="notificationContainer"></div>
+<div class="history-container" id="historyContainer"></div>
+
+<script>
+    const notificationHistory = [];
+    function createNotification(title, message) {
+        const container = document.getElementById('notificationContainer');
+
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+
+        notification.innerHTML = `
+            <div>
+                <h4>${title}</h4>
+                <p>${message}</p>
+            </div>
+            <button class="close-btn" onclick="this.parentElement.remove()">×</button>
+        `;
+
+        container.appendChild(notification);
+        setTimeout(() => {
+            notification.classList.add('show');
+        },10);
+
+        setTimeout(() => {              //auto remove the notification after 8 secs
+            notification.remove();
+        }, 8000);
+        addToHistory(title, message);   //add notification to history
+    }
+
+    //add notifications to history
+    function addToHistory(title, message) {
+        notificationHistory.push({ title, message });
+        updateHistory();    //update history container
+    }
+
+    //update the history container
+    function updateHistory() {
+        const historyContainer = document.getElementById('historyContainer');
+        historyContainer.innerHTML = '';        //clear current history
+
+        notificationHistory.forEach((notification) => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+
+            historyItem.innerHTML = `
+                <h4>${notification.title}</h4>
+                <p>${notification.message}</p>
+            `;
+
+            historyContainer.appendChild(historyItem);
+        });
+    }
+
+    //toggle history display
+    function toggleHistory() {
+        const historyContainer = document.getElementById('historyContainer');
+        historyContainer.style.display = historyContainer.style.display === 'none' ? 'block' : 'none';
+    }
+
+    //placeholder
+    createNotification('Event 1 Update', 'You have been added to event 1.');
+    createNotification('New event added', 'Check event tab for new event');
+    createNotification('Reminder', 'Event 4 is tomorrow!');
+</script>
+
+</body>
+</html>
