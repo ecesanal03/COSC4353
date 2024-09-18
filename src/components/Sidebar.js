@@ -16,7 +16,7 @@ const Sidebar = () => {
   
     return (
       <div style={styles.sidebarContainer}>
-        <h2 style={styles.logo}>My App</h2>
+        <h2 style={styles.logo}>Volunteer Management</h2>
         <ul style={styles.navList}>
           <li style={styles.navItem}>
             <FaHome style={styles.icon} />
