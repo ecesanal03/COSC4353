@@ -133,10 +133,11 @@ const Profile = () => {
 const styles = {
   pageContainer: {
     display: 'flex',
+    marginLeft:'25vh',
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
-    width: '100vw',
+    width: '74vw',
     backgroundColor: '#f4f7f6',
   },
   formContainer: {
@@ -147,8 +148,9 @@ const styles = {
     backgroundColor: '#fff',
     borderRadius: '12px',
     boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
-    width: '90%',
-    maxWidth: '600px',
+    width: '80%',
+    height:'90vh',
+
   },
   heading: {
     textAlign: 'center',

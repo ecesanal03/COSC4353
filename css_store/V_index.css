@@ -1,7 +1,6 @@
-.event-container {
+body {
     margin: 0;
     display: flex;
-    flex-grow: 1;
     font-family: sans-serif, monospace, Arial, Helvetica, ;
     background-color: rgb(215, 244, 250);
 }
@@ -18,7 +17,7 @@
     top: 0;
     left: 0;
     height: 100vh; /* Make it take the full viewport height */
-    width: 25vh; /* Fixed width for the nav bar */
+    width: 10vh; /* Fixed width for the nav bar */
     background-color: rgb(27, 207, 195); /* Add some background for visibility */
     color: white;
     display: flex;
@@ -30,7 +29,7 @@
 #formMatching {
     flex-grow: 1;
     position:relative;
-    margin-left: 25vh; /* Push the content to the right to account for the fixed nav bar */
+    margin-left: 10vh; /* Push the content to the right to account for the fixed nav bar */
     /* border: 2px solid black; */
     width: 90vh; 
     /* Make the form area responsive to the nav bar */
@@ -47,6 +46,7 @@
 
 .card {
     /* background-color: #f4f4f4; */
+    cursor: pointer;
     padding: 0px;
     width:30vh;
     height:30vh;
@@ -57,12 +57,6 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
-.card:hover {
-    /* background-color: #f4f4f4; */
-    cursor: pointer;
-    background-color: rgb(81, 73, 73);
-    transition:ease-in-out 1s;
-}
 .cardText
 {
     text-align: center;
@@ -70,10 +64,8 @@
 }
 .dynamic-box {
     display:flex;
-    justify-content: space-evenly;
-    align-content:flex-start;
     flex-wrap:wrap;
-    gap:2vh 1vh;
+    gap:1vh 1vh;
     /* background-color: #eaeaea; */
     padding: 20px;
     /* border: 1px solid #ccc; */

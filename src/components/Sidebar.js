@@ -19,28 +19,22 @@ const Sidebar = () => {
         <h2 style={styles.logo}>Volunteer Management</h2>
         <ul style={styles.navList}>
           <li style={styles.navItem}>
-            <FaHome style={styles.icon} />
-            <Link to="/dashboard" style={styles.navLink}>Dashboard</Link>
+            <Link to="/dashboard" style={styles.navLink}><FaHome style={styles.icon} />Dashboard</Link>
           </li>
           <li style={styles.navItem}>
-            <FaUser style={styles.icon} />
-            <Link to="/profile" style={styles.navLink}>Profile</Link>
+            <Link to="/profile" style={styles.navLink}><FaUser style={styles.icon} />Profile</Link>
           </li>
           <li style={styles.navItem}>
-            <FaCalendarAlt style={styles.icon} />
-            <Link to="/event-management" style={styles.navLink}>Event Management</Link>
+            <Link to="/event-management" style={styles.navLink}><FaCalendarAlt style={styles.icon} />Event Management</Link>
           </li>
           <li style={styles.navItem}>
-            <FaUsers style={styles.icon} />
-            <Link to="/volunteer-matching" style={styles.navLink}>Volunteer Matching</Link>
+            <Link to="/volunteer-matching" style={styles.navLink}><FaUsers style={styles.icon} />Volunteer Matching</Link>
           </li>
           <li style={styles.navItem}>
-            <FaHistory style={styles.icon} />
-            <Link to="/volunteer-history" style={styles.navLink}>Volunteer History</Link>
+            <Link to="/volunteer-history" style={styles.navLink}><FaHistory style={styles.icon} />Volunteer History</Link>
           </li>
           <li style={styles.navItem} onClick={handleLogout}>
-            <FaSignOutAlt style={styles.icon} />
-            <span style={styles.navLink}>Logout</span>
+            <span style={styles.navLink}><FaSignOutAlt style={styles.icon} />Logout</span>
           </li>
         </ul>
       </div>
@@ -49,10 +43,11 @@ const Sidebar = () => {
 
 const styles = {
   sidebarContainer: {
+    position:'fixed',
     backgroundColor: '#3A7CA5',
     color: '#fff',
     height: '100vh',
-    width: '250px',
+    width: '25vh',
     padding: '20px',
     boxSizing: 'border-box',
   },
