@@ -1,14 +1,13 @@
 // Layout.js
 import React from 'react';
 import Sidebar from './Sidebar';
-import Profile from './Profile';  // or any other main content component
 
-const Layout = () => {
+const Layout = ({ children }) => { // Accept children as a prop
   return (
     <div style={styles.layoutContainer}>
       <Sidebar />
       <div style={styles.contentContainer}>
-        <Profile />  {/* This could be any main content you want */}
+        {children}  {/* Render the dynamic content here */}
       </div>
     </div>
   );
@@ -19,10 +18,11 @@ const styles = {
     display: 'flex',
     height: '100vh',  // Ensures the layout takes up the full viewport height
     width: '100vw',   // Full width of the viewport
+    overflowX:'hidden',
   },
   contentContainer: {
     flexGrow: 1,  // The content will take up the remaining space
-    padding: '20px',
+    padding: '0px',
     backgroundColor: '#f4f7f6',
   },
 };

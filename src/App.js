@@ -17,37 +17,37 @@ function App() {
         <Route path="/signup" element={<Signup />} />
 
         {/* Routes that need Layout with Sidebar */}
-        <Route 
-          path="/profile" 
+        <Route
+          path="/profile"
           element={
             <Layout>
-              <Profile /> {/* Profile inside Layout */}
+              <Profile />  {/* Profile content inside Layout */}
             </Layout>
-          } 
+          }
         />
-        <Route 
-          path="/event-management" 
+        <Route
+          path="/event-management"
           element={
             <Layout>
-              <EventManagement /> {/* Event Management inside Layout */}
+              <EventManagement />  {/* Event Management content inside Layout */}
             </Layout>
-          } 
+          }
         />
-        <Route 
-          path="/volunteer-matching" 
+        <Route
+          path="/volunteer-matching"
           element={
             <Layout>
-              <VolunteerMatching /> {/* Volunteer Matching inside Layout */}
+              <VolunteerMatching />  {/* Volunteer Matching content inside Layout */}
             </Layout>
-          } 
+          }
         />
-        <Route 
-          path="/volunteer-history" 
+        <Route
+          path="/volunteer-history"
           element={
             <Layout>
-              <VolunteerHistory /> {/* Volunteer History inside Layout */}
+              <VolunteerHistory />  {/* Volunteer History content inside Layout */}
             </Layout>
-          } 
+          }
         />
       </Routes>
     </Router>
