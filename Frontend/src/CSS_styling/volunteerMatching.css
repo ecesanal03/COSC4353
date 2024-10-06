@@ -57,11 +57,18 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
+.disable-select {
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
+  }
 .card:hover {
     /* background-color: #f4f4f4; */
     cursor: pointer;
-    background-color: rgb(81, 73, 73);
-    transition:ease-in-out 1s;
+    background-color: rgb(100, 91, 91);
+    transition:ease-in-out 0.4s;
+    transform: scale(1.1);
 }
 .cardText
 {
@@ -95,6 +102,11 @@
     margin:0;
     padding:0;
     height:100%;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    -webkit-user-drag: none;
 }
 .card::-webkit-scrollbar {
     width: 3%;               /* width of the entire scrollbar */
@@ -108,3 +120,4 @@
   border-radius: 20px;       /* roundness of the scroll thumb */
   border: 3px solid black;  /* creates padding around scroll thumb */
 }
+
