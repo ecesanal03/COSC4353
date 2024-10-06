@@ -10,8 +10,6 @@ from redmail import outlook
 from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from . import Gpio_control,skeletonclass
-
 #import logging
 
 server_core = {'current_state':'Stop','toggle_report' : True}
@@ -32,16 +30,16 @@ class SocketConsumer(WebsocketConsumer):
             self.channel_name
         )
         self.accept()
-        if server_core["toggle_report"] is True:
-            server_core["toggle_report"] = False
-            self.send_message(f'{str(datetime.datetime.now())},\n')
-        else:
-            async_to_sync(self.channel_layer.group_send)(
-            'event_sharif',
-            {
-                'type': 'send_message',
-                'message': "\nWelcome back!!!\n\n"
-            })
+        # if server_core["toggle_report"] is True:
+        #     server_core["toggle_report"] = False
+        #     self.send_message(f'{str(datetime.datetime.now())},\n')
+        # else:
+        #     async_to_sync(self.channel_layer.group_send)(
+        #     'event_sharif',
+        #     {
+        #         'type': 'send_message',
+        #         'message': "\nWelcome back!!!\n\n"
+        #     })
     def disconnect(self, code):
         """handle disconnection"""       
         pass
@@ -49,29 +47,30 @@ class SocketConsumer(WebsocketConsumer):
     def receive(self, text_data):
         """handle message from users"""
         text_data_json = json.loads(text_data)
-        message, change_mode = text_data_json["message"],text_data_json["next_state"]
-        if change_mode is True:
-            self.verify_and_change()
-            async_to_sync(self.channel_layer.group_send)(
-            'event_sharif',
-            {
-                'type': 'send_message',
-                'message': f"Mode changed to {server_core['current_state']}\n"
-            })
+        print(text_data_json)
+        # message, change_mode = text_data_json["message"],text_data_json["next_state"]
+        # if change_mode is True:
+        #     self.verify_and_change()
+        #     async_to_sync(self.channel_layer.group_send)(
+        #     'event_sharif',
+        #     {
+        #         'type': 'send_message',
+        #         'message': f"Mode changed to {server_core['current_state']}\n"
+        #     })
 
-        else:
-            #save message into local database
-            if isinstance(message,str) is False:
-                file_path = open(os.path.join(os.path.dirname(__file__), "DjangoStoreMode.txt"),
-                                 'wb')
-                pickle.dump(message,file_path)
-                message = 'Data Saved'
-                self.send(text_data=json.dumps({"message": message,
-                                    "running_mode":f'{server_core["current_state"]}'}))
-            else:
-                self.send_batch_report(message)
-                self.send(text_data=json.dumps({"message": f'Send report to {message}',
-                                    "running_mode":f'{server_core["current_state"]}'}))                
+        # else:
+        #     #save message into local database
+        #     if isinstance(message,str) is False:
+        #         file_path = open(os.path.join(os.path.dirname(__file__), "DjangoStoreMode.txt"),
+        #                          'wb')
+        #         pickle.dump(message,file_path)
+        #         message = 'Data Saved'
+        #         self.send(text_data=json.dumps({"message": message,
+        #                             "running_mode":f'{server_core["current_state"]}'}))
+        #     else:
+        #         self.send_batch_report(message)
+        #         self.send(text_data=json.dumps({"message": f'Send report to {message}',
+        #                             "running_mode":f'{server_core["current_state"]}'}))                
 
     def send_message(self, event):
         """Send message to users"""
@@ -82,6 +81,8 @@ class SocketConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({"message": event,
                                         "running_mode":f'{server_core["current_state"]}'}))
 
+
+    #temp, not needed
     def emergency_stop(self,event):
         """stop if misaligned"""
         #server_core["current_state"] = 'Idle'
@@ -91,6 +92,8 @@ class SocketConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({"message": message,
                                         "running_mode":'Idle'}))
 
+
+    #temp, not needed
     def verify_and_change(self):
         """change button color"""
         if server_core['current_state'] == "Running":
@@ -103,6 +106,8 @@ class SocketConsumer(WebsocketConsumer):
         else:
             server_core['current_state'] = 'Running'
 
+
+    #temp, not needed
     def send_batch_report(self,reciever):
         """create and send batch report"""
         server_core["toggle_report"]= True
@@ -123,6 +128,8 @@ class SocketConsumer(WebsocketConsumer):
                )
         except:#in case wrong address
             self.send_message('A problem occured during batch report sending process! \n')
+
+
 #state modify function and send data back for color display
 
 #recieve should call the function to send data to, that function also modify value
