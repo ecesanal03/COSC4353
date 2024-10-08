@@ -4,6 +4,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DatePicker.css'; // Custom styles for datepicker
 
+
+
 const Profile = () => {
   const [fullName, setFullName] = useState('');
   const [address1, setAddress1] = useState('');
