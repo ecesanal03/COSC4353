@@ -47,6 +47,10 @@ const EventList = () => {
 
     socket.current.onopen = () => {
       console.log('WebSocket connection opened');
+      const message = {
+        page_loc: 'VolunteerMatching',
+      };
+      socket.current.send(JSON.stringify(message)); 
     };
 
     socket.current.onmessage = (event) => {

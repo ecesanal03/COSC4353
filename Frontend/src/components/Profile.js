@@ -12,6 +12,10 @@ const Profile = () => {
 
     socket.current.onopen = () => {
       console.log('WebSocket connection opened');
+      const message = {
+        page_loc: 'VolunteerProfile',
+      };
+      socket.current.send(JSON.stringify(message));
     };
 
     socket.current.onmessage = (event) => {

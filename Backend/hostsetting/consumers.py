@@ -11,7 +11,7 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement,VolunteerProfile
+from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement,VolunteerProfile,VolunteerSignup,VolunteerLogin
 #import logging
 
 class SocketConsumer(WebsocketConsumer):
@@ -41,9 +41,7 @@ class SocketConsumer(WebsocketConsumer):
         #         'message': "\nWelcome back!!!\n\n"
         #     })
 
-        # if (front end saying what page it is)
-        #     self.front_end_page = "Volunteer Matchiang"
-        
+
     def disconnect(self, code):
         """handle disconnection"""       
         pass
@@ -51,9 +49,24 @@ class SocketConsumer(WebsocketConsumer):
     def receive(self, text_data):
         """handle message from users"""
         text_data_json = json.loads(text_data)
-        print(text_data_json)
-        # if self.front_end_page == "Volunteer Matching":
-        VolunteerMatching.main_function(text_data_json)
+        
+        if self.front_end_page == "":
+            self.front_end_page = text_data_json['page_loc']
+            print(self.front_end_page)
+        else:
+            if self.front_end_page == "VolunteerSignup":
+                VolunteerSignup.main_function(text_data_json)
+            elif self.front_end_page == "VolunteerLogin":
+                VolunteerLogin.main_function(text_data_json)
+            elif self.front_end_page == "VolunteerProfile":
+                VolunteerProfile.main_function(text_data_json)
+            elif self.front_end_page == "VolunteerManagement":
+                VolunteerManagement.main_function(text_data_json)
+            elif self.front_end_page == "VolunteerMatching":
+                VolunteerMatching.main_function(text_data_json)
+            elif self.front_end_page == "VolunteerHistory":
+                VolunteerHistory.main_function(text_data_json)
+
 
 
 #state modify function and send data back for color display

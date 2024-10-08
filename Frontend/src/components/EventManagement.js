@@ -15,6 +15,10 @@ const EventManagement = () => {
 
     socket.current.onopen = () => {
       console.log('WebSocket connection opened');
+      const message = {
+        page_loc: 'VolunteeManagement',
+      };
+      socket.current.send(JSON.stringify(message));
     };
 
     socket.current.onmessage = (event) => {
