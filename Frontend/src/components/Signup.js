@@ -1,7 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  
+
+  const socketUrl = 'ws://localhost:8000/';
+  const socket = useRef(null);
+  useEffect(() => {
+    socket.current = new WebSocket(socketUrl);
+
+    socket.current.onopen = () => {
+      console.log('WebSocket connection opened');
+    };
+
+    socket.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log('Message received from server:', message);
+    };
+
+    socket.current.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    socket.current.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+    return () => {
+      if (socket.current) {
+        socket.current.close();
+      }
+    };
+  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();

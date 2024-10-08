@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DatePicker.css'; // Custom styles for datepicker
 
-
-
 const Profile = () => {
+  const socketUrl = 'ws://localhost:8000/';
+  const socket = useRef(null);
+  useEffect(() => {
+    socket.current = new WebSocket(socketUrl);
+
+    socket.current.onopen = () => {
+      console.log('WebSocket connection opened');
+    };
+
+    socket.current.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log('Message received from server:', message);
+    };
+
+    socket.current.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    socket.current.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+    return () => {
+      if (socket.current) {
+        socket.current.close();
+      }
+    };
+  }, []);
   const [fullName, setFullName] = useState('');
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
