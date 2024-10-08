@@ -13,47 +13,14 @@ from asgiref.sync import async_to_sync
 
 from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement,VolunteerProfile,VolunteerSignup,VolunteerLogin
 #import logging
-data = [
-    {
-      'eventID': "S15598",
-      'ifRSVP': True,
-      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      'eventName': "Music Concert",
-      'eventLocation': "Central Park, NY",
-      'eventTime': "2024-09-15 18:00",
-    },
-    {
-      'eventID': "S19586",
-      'ifRSVP': False,
-      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      'eventName': "Art Exhibition",
-      'eventLocation': "Downtown Gallery, LA",
-      'eventTime': "2024-09-20 10:00",
-    },
-    {
-      'eventID': "S19581",
-      'ifRSVP': False,
-      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      'eventName': "Art Exhibition",
-      'eventLocation': "Downtown Gallery, LA",
-      'eventTime': "2024-09-20 10:00",
-    },
-    {
-      'eventID': "S19582",
-      'ifRSVP': False,
-      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      'eventName': "Art Exhibition",
-      'eventLocation': "Downtown Gallery, LA",
-      'eventTime': "2024-09-20 10:00",
-    },
-  ]
+
+
 class SocketConsumer(WebsocketConsumer):
     """Asynchronous method of communication"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.front_end_page = ""
-        # self.flasheart = FlashbeardHeart(5,0,1,2000)
-        # self.flasheart.start()
+
 
     def connect(self):    
         self.room_name = 'event'
@@ -81,13 +48,15 @@ class SocketConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         """handle message from users"""
+        # print('raw text is',text_data)
         text_data_json = json.loads(text_data)
-        
-        if self.front_end_page == "":
+        if 'page_loc' in text_data_json:
+            print(text_data_json)
+            print('json is',text_data_json)
             self.front_end_page = text_data_json['page_loc']
-            if self.front_end_page == "VolunteerMatching":
+            if self.front_end_page == "VolunteerMatching": 
                 self.send(text_data=json.dumps({"populate_data": True,
-                        "events":data}))
+                            "events":VolunteerMatching.get_data()}))
         else:
             if self.front_end_page == "VolunteerSignup":
                 VolunteerSignup.main_function(text_data_json)
@@ -99,8 +68,10 @@ class SocketConsumer(WebsocketConsumer):
                 VolunteerManagement.main_function(text_data_json)
             elif self.front_end_page == "VolunteerMatching":
                 VolunteerMatching.main_function(text_data_json)
+                print(VolunteerMatching.get_data())
             elif self.front_end_page == "VolunteerHistory":
                 VolunteerHistory.main_function(text_data_json)
+            
 
 
 

@@ -1,39 +1,34 @@
 import React, { useEffect, useState, useRef } from 'react';
-
+import { useWebSocket } from '../WebSocketContext.js';
 const VolunteerHistory = ({ history }) => {
-  
+  const [data, setData] = useState({});
+  const { socket, sendMessage } = useWebSocket();
+  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
 
-  const socketUrl = 'ws://localhost:8000/';
-  const socket = useRef(null);
   useEffect(() => {
-    socket.current = new WebSocket(socketUrl);
-
-    socket.current.onopen = () => {
-      console.log('WebSocket connection opened');
-      const message = {
-        page_loc: 'VolunteerHistory',
+    if (socket) {
+      const handleMessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Message received from server:', message);
+        
+        if (message.hasOwnProperty('events')) {
+          setData(message.events);
+        }
       };
-      socket.current.send(JSON.stringify(message));
-    };
 
-    socket.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      console.log('Message received from server:', message);
-    };
+      socket.onmessage = handleMessage;
 
-    socket.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    socket.current.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-    return () => {
-      if (socket.current) {
-        socket.current.close();
+      // Only send message if it's not already sent
+      if (!hasSentMessage.current) {
+        sendMessage({ page_loc: 'VolunteerHistory' });
+        hasSentMessage.current = true; // Prevent sending it again
       }
-    };
-  }, []);
+
+      return () => {
+        socket.onmessage = null; // Cleanup on unmount
+      };
+    }
+  }, [socket, sendMessage]);
   return (
     <div style={styles.pageContainer}>
       <h2 style={styles.heading}>Volunteer Participation History</h2>
