@@ -1,10 +1,40 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './DatePicker.css'; // Custom styles for datepicker
+import { useWebSocket } from '../WebSocketContext.js';
 
 const Profile = () => {
+  const [data, setData] = useState({});
+  const { socket, sendMessage } = useWebSocket();
+  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+
+  useEffect(() => {
+    if (socket) {
+      const handleMessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Message received from server:', message);
+        
+        if (message.hasOwnProperty('events')) {
+          setData(message.events);
+        }
+      };
+
+      socket.onmessage = handleMessage;
+
+      // Only send message if it's not already sent
+      if (!hasSentMessage.current) {
+        sendMessage({ page_loc: 'VolunteeProfile' });
+        hasSentMessage.current = true; // Prevent sending it again
+      }
+
+      return () => {
+        socket.onmessage = null; // Cleanup on unmount
+      };
+    }
+  }, [socket, sendMessage]);
+
   const [fullName, setFullName] = useState('');
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
@@ -112,16 +142,15 @@ const Profile = () => {
               onChange={(date) => setAvailability(date)}
               placeholderText="Select availability dates"
               required
-              style={styles.datepicker}
               className="custom-datepicker"
             />
-            <button onClick={handleSubmit} style={styles.submitButton}>Submit</button>
+            <button type="button" onClick={handleSubmit} style={styles.submitButton}>Submit</button>
           </>
         ) : (
           <div style={styles.thankYouMessage}>
             <h3>Thank you for completing your profile!</h3>
             <p>Your profile has been submitted successfully.</p>
-            <button onClick={() => setSubmitted(false)} style={styles.submitButton}>Edit Profile</button>
+            <button type="button" onClick={() => setSubmitted(false)} style={styles.submitButton}>Edit Profile</button>
           </div>
         )}
       </form>
@@ -133,7 +162,7 @@ const Profile = () => {
 const styles = {
   pageContainer: {
     display: 'flex',
-    marginLeft:'25vh',
+    marginLeft: '25vh',
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
@@ -149,8 +178,7 @@ const styles = {
     borderRadius: '12px',
     boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.1)',
     width: '80%',
-    height:'90vh',
-
+    height: '90vh',
   },
   heading: {
     textAlign: 'center',
@@ -178,15 +206,6 @@ const styles = {
     height: '100px',
     fontSize: '16px',
     color: '#333',
-  },
-  datepicker: {
-    marginBottom: '130px', // Added extra margin for separation
-    padding: '15px',
-    borderRadius: '8px',
-    border: '1px solid #ddd',
-    fontSize: '16px',
-    color: '#333',
-    width: '100%',
   },
   submitButton: {
     backgroundColor: '#3A7CA5',
@@ -219,4 +238,3 @@ const customSelectStyles = {
 };
 
 export default Profile;
-

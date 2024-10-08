@@ -113,9 +113,4 @@ function showPopup(user, eventID, ifRSVP) {
                   });
                 }});
         }
-
-
-
-
-
 }

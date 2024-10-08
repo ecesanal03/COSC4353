@@ -1,18 +1,17 @@
-needed:https://channels.readthedocs.io/en/stable/installation.html
+ignore :needed:https://channels.readthedocs.io/en/stable/installation.html
+
 
 python -m pip install Django
 python -m pip install -U channels["daphne"]
+pip install ctime
+pip install datetime
+pip install pathlib
+pip install asgiref
+pip install pyserial
+pip install redmail
 
-pip install - {import ctime, json,pickle,os,pathlib,threading,datetime,redmail,asgiref,sync,pyserial}
+
+RUN USING: python manage.py runserver 0.0.0.0:8000
 
 
-needed pip install:
-ctime
-pathlib
-datetime
-asgiref
-pyserial
-
-python manage.py runserver 0.0.0.0:8000
-
-access website at http://localhost:8000/hostsetting/data_request/
+access website at http://localhost:8000/

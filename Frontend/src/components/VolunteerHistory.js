@@ -1,6 +1,34 @@
-import React from 'react';
-
+import React, { useEffect, useState, useRef } from 'react';
+import { useWebSocket } from '../WebSocketContext.js';
 const VolunteerHistory = ({ history }) => {
+  const [data, setData] = useState({});
+  const { socket, sendMessage } = useWebSocket();
+  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+
+  useEffect(() => {
+    if (socket) {
+      const handleMessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Message received from server:', message);
+        
+        if (message.hasOwnProperty('events')) {
+          setData(message.events);
+        }
+      };
+
+      socket.onmessage = handleMessage;
+
+      // Only send message if it's not already sent
+      if (!hasSentMessage.current) {
+        sendMessage({ page_loc: 'VolunteerHistory' });
+        hasSentMessage.current = true; // Prevent sending it again
+      }
+
+      return () => {
+        socket.onmessage = null; // Cleanup on unmount
+      };
+    }
+  }, [socket, sendMessage]);
   return (
     <div style={styles.pageContainer}>
       <h2 style={styles.heading}>Volunteer Participation History</h2>

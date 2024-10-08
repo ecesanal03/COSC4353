@@ -1,11 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNotification } from './NotificationContext'; // Import the notification context
-
+import { useWebSocket } from '../WebSocketContext.js';
 const EventManagement = () => {
-  // State for form fields
+  const [data, setData] = useState({});
+  const { socket, sendMessage } = useWebSocket();
+  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+
+  useEffect(() => {
+    if (socket) {
+      const handleMessage = (event) => {
+        const message = JSON.parse(event.data);
+        console.log('Message received from server:', message);
+        
+        if (message.hasOwnProperty('events')) {
+          setData(message.events);
+        }
+      };
+
+      socket.onmessage = handleMessage;
+
+      // Only send message if it's not already sent
+      if (!hasSentMessage.current) {
+        sendMessage({ page_loc: 'VolunteerManagement' });
+        hasSentMessage.current = true; // Prevent sending it again
+      }
+
+      return () => {
+        socket.onmessage = null; // Cleanup on unmount
+      };
+    }
+  }, [socket, sendMessage]);
   const [eventName, setEventName] = useState('');
   const [eventDescription, setEventDescription] = useState('');
   const [location, setLocation] = useState('');

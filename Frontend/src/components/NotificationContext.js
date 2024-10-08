@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
-
+import React, {  useEffect, useRef ,createContext, useContext, useState } from 'react';
 // Create Notification Context
 const NotificationContext = createContext();
 
