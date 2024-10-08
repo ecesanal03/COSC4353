@@ -11,7 +11,7 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from . import tempt1
+from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement,VolunteerProfile
 #import logging
 
 class SocketConsumer(WebsocketConsumer):
@@ -52,8 +52,8 @@ class SocketConsumer(WebsocketConsumer):
         """handle message from users"""
         text_data_json = json.loads(text_data)
         print(text_data_json)
-        if self.front_end_page == "Volunteer Matching":
-            tempt1.main_function(text_data_json)
+        # if self.front_end_page == "Volunteer Matching":
+        VolunteerMatching.main_function(text_data_json)
 
 
 #state modify function and send data back for color display
