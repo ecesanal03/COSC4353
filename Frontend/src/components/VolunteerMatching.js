@@ -1,61 +1,28 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Swal from 'sweetalert2';
-
 import "../CSS_styling/volunteerMatching.css";
 
 const EventList = () => {
-  const [data, setData] = useState([
-    {
-      eventID: "S15598",
-      ifRSVP: true,
-      eventImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      eventName: "Music Concert",
-      eventLocation: "Central Park, NY",
-      eventTime: "2024-09-15 18:00",
-    },
-    {
-      eventID: "S19586",
-      ifRSVP: false,
-      eventImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      eventName: "Art Exhibition",
-      eventLocation: "Downtown Gallery, LA",
-      eventTime: "2024-09-20 10:00",
-    },
-    {
-      eventID: "S19581",
-      ifRSVP: false,
-      eventImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      eventName: "Art Exhibition",
-      eventLocation: "Downtown Gallery, LA",
-      eventTime: "2024-09-20 10:00",
-    },
-    {
-      eventID: "S19582",
-      ifRSVP: false,
-      eventImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-      eventName: "Art Exhibition",
-      eventLocation: "Downtown Gallery, LA",
-      eventTime: "2024-09-20 10:00",
-    },
-  ]);
-
-
+  const [data, setData] = useState([]); // Initialize as empty array
   const socketUrl = 'ws://localhost:8000/';
   const socket = useRef(null);
+
   useEffect(() => {
     socket.current = new WebSocket(socketUrl);
 
     socket.current.onopen = () => {
       console.log('WebSocket connection opened');
-      const message = {
-        page_loc: 'VolunteerMatching',
-      };
-      socket.current.send(JSON.stringify(message)); 
+      const message = { page_loc: 'VolunteerMatching' };
+      socket.current.send(JSON.stringify(message));
     };
 
     socket.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log('Message received from server:', message);
+      // Update the state with the data received from the websocket
+      if (message.hasOwnProperty('events')) { // Check if the message contains 'events'
+        setData(message.events);
+      }
     };
 
     socket.current.onerror = (error) => {
@@ -65,13 +32,13 @@ const EventList = () => {
     socket.current.onclose = () => {
       console.log('WebSocket connection closed');
     };
+
     return () => {
       if (socket.current) {
         socket.current.close();
       }
     };
-  }, []);
-
+  }, []); // Empty dependency array ensures this runs only once on mount
   const showPopup = (user, eventID, ifRSVP) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {

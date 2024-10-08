@@ -13,7 +13,40 @@ from asgiref.sync import async_to_sync
 
 from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement,VolunteerProfile,VolunteerSignup,VolunteerLogin
 #import logging
-
+data = [
+    {
+      'eventID': "S15598",
+      'ifRSVP': True,
+      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
+      'eventName': "Music Concert",
+      'eventLocation': "Central Park, NY",
+      'eventTime': "2024-09-15 18:00",
+    },
+    {
+      'eventID': "S19586",
+      'ifRSVP': False,
+      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
+      'eventName': "Art Exhibition",
+      'eventLocation': "Downtown Gallery, LA",
+      'eventTime': "2024-09-20 10:00",
+    },
+    {
+      'eventID': "S19581",
+      'ifRSVP': False,
+      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
+      'eventName': "Art Exhibition",
+      'eventLocation': "Downtown Gallery, LA",
+      'eventTime': "2024-09-20 10:00",
+    },
+    {
+      'eventID': "S19582",
+      'ifRSVP': False,
+      'eventImage': "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
+      'eventName': "Art Exhibition",
+      'eventLocation': "Downtown Gallery, LA",
+      'eventTime': "2024-09-20 10:00",
+    },
+  ]
 class SocketConsumer(WebsocketConsumer):
     """Asynchronous method of communication"""
     def __init__(self, *args, **kwargs):
@@ -52,7 +85,9 @@ class SocketConsumer(WebsocketConsumer):
         
         if self.front_end_page == "":
             self.front_end_page = text_data_json['page_loc']
-            print(self.front_end_page)
+            if self.front_end_page == "VolunteerMatching":
+                self.send(text_data=json.dumps({"populate_data": True,
+                        "events":data}))
         else:
             if self.front_end_page == "VolunteerSignup":
                 VolunteerSignup.main_function(text_data_json)
