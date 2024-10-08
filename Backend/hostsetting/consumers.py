@@ -48,6 +48,9 @@ class SocketConsumer(WebsocketConsumer):
         """handle message from users"""
         text_data_json = json.loads(text_data)
         print(text_data_json)
+        
+        
+        
         # message, change_mode = text_data_json["message"],text_data_json["next_state"]
         # if change_mode is True:
         #     self.verify_and_change()

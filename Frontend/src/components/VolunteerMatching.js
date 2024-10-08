@@ -3,8 +3,6 @@ import Swal from 'sweetalert2';
 
 import "../CSS_styling/volunteerMatching.css";
 
-const socketUrl = 'ws://localhost:8000/';
-
 const EventList = () => {
   const [data, setData] = useState([
     {
@@ -41,8 +39,9 @@ const EventList = () => {
     },
   ]);
 
-  const socket = useRef(null);
 
+  const socketUrl = 'ws://localhost:8000/';
+  const socket = useRef(null);
   useEffect(() => {
     socket.current = new WebSocket(socketUrl);
 
