@@ -10,8 +10,12 @@ from redmail import outlook
 from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from hostsetting.GroupFileWork.VolunteerSignup import VolunteerSignup
+from hostsetting.GroupFileWork.VolunteerLogin import VolunteerLogin
+from hostsetting.GroupFileWork.VolunteerProfile import VolunteerProfile
 
-from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement,VolunteerProfile,VolunteerSignup,VolunteerLogin
+
+from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement
 #import logging
 
 
@@ -47,31 +51,48 @@ class SocketConsumer(WebsocketConsumer):
         pass
 
     def receive(self, text_data):
-        """handle message from users"""
-        # print('raw text is',text_data)
+        """Handle message from users"""
         text_data_json = json.loads(text_data)
-        print('recieved json', text_data_json)
+        print('received json', text_data_json)  # Debugging statement
+
         if 'page_loc' in text_data_json:
             self.front_end_page = text_data_json['page_loc']
-            if self.front_end_page== "socketinit":
-                self.send(text_data=json.dumps({"dummy":True}))
-            elif self.front_end_page == "VolunteerMatching": 
-                self.send(text_data=json.dumps({"populate_data": True,
-                            "events":VolunteerMatching.get_data()}))
-        else:
-            if self.front_end_page == "VolunteerSignup":
-                VolunteerSignup.main_function(text_data_json)
+            print(f'Page location received: {self.front_end_page}')  # Debugging statement
+
+            if self.front_end_page == "socketinit":
+                self.send(text_data=json.dumps({"dummy": True}))
+
+            elif self.front_end_page == "VolunteerSignup":
+                print('VolunteerSignup triggered')  # Debugging statement
+                response = VolunteerSignup.main_function(text_data_json)
+                print(f'Sending Signup Response: {response}')  # Debugging statement
+                self.send(text_data=json.dumps(response))
+
             elif self.front_end_page == "VolunteerLogin":
-                VolunteerLogin.main_function(text_data_json)
+                print('VolunteerLogin triggered')  # Debugging statement
+                response = VolunteerLogin.main_function(text_data_json)
+                print(f'Sending Login Response: {response}')  # Debugging statement
+                self.send(text_data=json.dumps(response))
+
+            elif self.front_end_page == "VolunteerMatching":
+                self.send(text_data=json.dumps({
+                    "populate_data": True,
+                    "events": VolunteerMatching.get_data()
+                }))
+
             elif self.front_end_page == "VolunteerProfile":
-                VolunteerProfile.main_function(text_data_json)
+                print('VolunteerProfile triggered')  # Debugging statement
+                response = VolunteerProfile.main_function(text_data_json)
+                print(f'Profile response: {response}')  # Debugging statement
+                self.send(text_data=json.dumps(response))
+
             elif self.front_end_page == "VolunteerManagement":
                 VolunteerManagement.main_function(text_data_json)
-            elif self.front_end_page == "VolunteerMatching":
-                VolunteerMatching.main_function(text_data_json)
-                print(VolunteerMatching.get_data())
+
             elif self.front_end_page == "VolunteerHistory":
                 VolunteerHistory.main_function(text_data_json)
+        else:
+            print('No page_loc in received data')  # Debugging statement
         
             
 
