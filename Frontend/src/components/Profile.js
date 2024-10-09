@@ -17,7 +17,7 @@ const Profile = () => {
         console.log('Message received from server:', message);
         
         if (message.hasOwnProperty('events')) {
-          setData(message.events);
+          setData(message);
         }
       };
 

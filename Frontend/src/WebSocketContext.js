@@ -11,16 +11,19 @@ export const WebSocketProvider = ({ children }) => {
 
     socket.current.onopen = () => {
       console.log('WebSocket connection opened');
-      const message = { page_loc: 'VolunteerMatching' };
+      const message = { page_loc: 'socketinit'};
       socket.current.send(JSON.stringify(message));
     };
 
     socket.current.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log('Message received from server:', message);
-      // Update the state with the data received from the websocket
       if (message.hasOwnProperty('events')) { // Check if the message contains 'events'
         setData(message.events);
+      }
+      else
+      {
+        setData(message);
       }
     };
 

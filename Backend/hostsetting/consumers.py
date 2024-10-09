@@ -50,11 +50,12 @@ class SocketConsumer(WebsocketConsumer):
         """handle message from users"""
         # print('raw text is',text_data)
         text_data_json = json.loads(text_data)
+        print('recieved json', text_data_json)
         if 'page_loc' in text_data_json:
-            print(text_data_json)
-            print('json is',text_data_json)
             self.front_end_page = text_data_json['page_loc']
-            if self.front_end_page == "VolunteerMatching": 
+            if self.front_end_page== "socketinit":
+                self.send(text_data=json.dumps({"dummy":True}))
+            elif self.front_end_page == "VolunteerMatching": 
                 self.send(text_data=json.dumps({"populate_data": True,
                             "events":VolunteerMatching.get_data()}))
         else:
@@ -71,6 +72,7 @@ class SocketConsumer(WebsocketConsumer):
                 print(VolunteerMatching.get_data())
             elif self.front_end_page == "VolunteerHistory":
                 VolunteerHistory.main_function(text_data_json)
+        
             
 
 

@@ -7,31 +7,30 @@ const EventList = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
   const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
-
+  var message = {};
   useEffect(() => {
+    console.log('this mean message is ready, gogogo')
     if (socket) {
       const handleMessage = (event) => {
-        const message = JSON.parse(event.data);
+        message = JSON.parse(event.data);
         console.log('Message received from server:', message);
-        
         if (message.hasOwnProperty('events')) {
           setData(message.events);
         }
+        console.log(Object.values(data));
       };
 
       socket.onmessage = handleMessage;
+      
 
-      // Only send message if it's not already sent
-      if (!hasSentMessage.current) {
-        sendMessage({ page_loc: 'VolunteerMatching' });
-        hasSentMessage.current = true; // Prevent sending it again
-      }
-
+      sendMessage({ page_loc: 'VolunteerMatching' });
       return () => {
         socket.onmessage = null; // Cleanup on unmount
       };
     }
   }, [socket, sendMessage]);
+
+  
   const showPopup = (user, eventID, ifRSVP) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
