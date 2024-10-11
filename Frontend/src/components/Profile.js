@@ -12,15 +12,48 @@ const Profile = () => {
   const existingProfile = location.state?.profile || JSON.parse(localStorage.getItem('userProfile')) || {};
   const email = localStorage.getItem('userEmail');  // Get the logged-in user's email from localStorage
 
+  // Convert skills to react-select's { value, label } format
+  const skillOptions = [
+    { value: 'coding', label: 'Coding' },
+    { value: 'design', label: 'Design' },
+    { value: 'project_management', label: 'Project Management' },
+    { value: 'writing', label: 'Writing' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'public_speaking', label: 'Public Speaking' },
+    { value: 'event_planning', label: 'Event Planning' },
+    { value: 'data_analysis', label: 'Data Analysis' },
+    { value: 'fundraising', label: 'Fundraising' },
+    { value: 'volunteer_management', label: 'Volunteer Management' },
+    { value: 'customer_service', label: 'Customer Service' },
+    { value: 'sales', label: 'Sales' },
+    { value: 'web_development', label: 'Web Development' },
+    { value: 'graphic_design', label: 'Graphic Design' },
+    { value: 'social_media', label: 'Social Media' },
+    { value: 'photography', label: 'Photography' },
+    { value: 'videography', label: 'Videography' },
+    { value: 'seo', label: 'SEO' },
+    { value: 'business_analysis', label: 'Business Analysis' },
+    { value: 'accounting', label: 'Accounting' },
+    { value: 'finance', label: 'Finance' },
+    { value: 'hr', label: 'Human Resources' },
+    { value: 'legal', label: 'Legal' }
+    // Add other options
+  ];
+
+  // Map backend skills to match the Select options
+  const mapSkillsToOptions = (skills) => {
+    return skills.map(skill => skillOptions.find(option => option.value === skill) || { value: skill, label: skill });
+  };
+
   const [fullName, setFullName] = useState(existingProfile.fullName || '');
   const [address1, setAddress1] = useState(existingProfile.address1 || '');
   const [address2, setAddress2] = useState(existingProfile.address2 || '');
   const [city, setCity] = useState(existingProfile.city || '');
   const [state, setState] = useState(existingProfile.state || '');
   const [zipCode, setZipCode] = useState(existingProfile.zipCode || '');
-  const [skills, setSkills] = useState(existingProfile.skills || []);
+  const [skills, setSkills] = useState(mapSkillsToOptions(existingProfile.skills || []));
   const [preferences, setPreferences] = useState(existingProfile.preferences || '');
-  const [availability, setAvailability] = useState(existingProfile.availability || null);
+  const [availability, setAvailability] = useState(existingProfile.availability ? new Date(existingProfile.availability) : null);
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
@@ -40,9 +73,9 @@ const Profile = () => {
               city,
               state,
               zipCode,
-              skills,
+              skills: skills.map(skill => skill.value),  // Save skills as plain values
               preferences,
-              availability
+              availability: availability.toISOString()  // Save date as ISO string
             }));
           } else {
             alert(message.message);
@@ -53,16 +86,17 @@ const Profile = () => {
       socket.onmessage = handleMessage;
 
       return () => {
-        socket.onmessage = null; 
+        socket.onmessage = null;
       };
     }
-  }, [socket]);
+  }, [socket, fullName, address1, address2, city, state, zipCode, skills, preferences, availability]);
 
   const handleSubmit = () => {
     if (!fullName || !address1 || !city || !state || !zipCode || skills.length === 0 || !availability) {
       alert('Please fill out all required fields!');
     } else {
-      const formattedAvailability = availability.toISOString(); // Format the date properly
+      // Check if availability is a valid Date object before formatting
+      const formattedAvailability = availability instanceof Date ? availability.toISOString() : null;
 
       const profileData = {
         page_loc: 'VolunteerProfile',
@@ -72,10 +106,10 @@ const Profile = () => {
         city,
         state,
         zipCode,
-        skills,
+        skills: skills.map(skill => skill.value),  // Send only skill values to backend
         preferences,
         availability: formattedAvailability,
-        email  // Replace with actual user email if available
+        email  // Use the stored email to link the profile to the user
       };
 
       sendMessage(profileData);
@@ -134,32 +168,7 @@ const Profile = () => {
     { value: 'WV', label: 'West Virginia' },
     { value: 'WI', label: 'Wisconsin' },
     { value: 'WY', label: 'Wyoming' }
-  ];
-
-  const skillsOptions = [
-    { value: 'coding', label: 'Coding' },
-    { value: 'design', label: 'Design' },
-    { value: 'project_management', label: 'Project Management' },
-    { value: 'writing', label: 'Writing' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'public_speaking', label: 'Public Speaking' },
-    { value: 'event_planning', label: 'Event Planning' },
-    { value: 'data_analysis', label: 'Data Analysis' },
-    { value: 'fundraising', label: 'Fundraising' },
-    { value: 'volunteer_management', label: 'Volunteer Management' },
-    { value: 'customer_service', label: 'Customer Service' },
-    { value: 'sales', label: 'Sales' },
-    { value: 'web_development', label: 'Web Development' },
-    { value: 'graphic_design', label: 'Graphic Design' },
-    { value: 'social_media', label: 'Social Media' },
-    { value: 'photography', label: 'Photography' },
-    { value: 'videography', label: 'Videography' },
-    { value: 'seo', label: 'SEO' },
-    { value: 'business_analysis', label: 'Business Analysis' },
-    { value: 'accounting', label: 'Accounting' },
-    { value: 'finance', label: 'Finance' },
-    { value: 'hr', label: 'Human Resources' },
-    { value: 'legal', label: 'Legal' }
+    // Add other states
   ];
 
   return (
@@ -206,6 +215,7 @@ const Profile = () => {
             <Select
               options={statesOptions}
               onChange={(selectedOption) => setState(selectedOption.value)}
+              value={statesOptions.find(option => option.value === state)}  // Show selected state
               placeholder="Select State"
               required
               styles={customSelectStyles}
@@ -221,8 +231,9 @@ const Profile = () => {
             />
             <Select
               isMulti
-              options={skillsOptions}
-              onChange={(selectedOptions) => setSkills(selectedOptions.map(option => option.value))}
+              options={skillOptions}
+              value={skills}
+              onChange={(selectedOptions) => setSkills(selectedOptions)}
               placeholder="Select Skills"
               required
               styles={customSelectStyles}
