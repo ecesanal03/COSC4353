@@ -1,0 +1,123 @@
+.event-container {
+    margin: 0;
+    display: flex;
+    flex-grow: 1;
+    font-family: sans-serif, monospace, Arial, Helvetica, ;
+    background-color: rgb(215, 244, 250);
+}
+
+/* Navigation Container */
+#NavContainer {
+    position: relative;
+    height: 100vh; /* Full viewport height */
+}
+
+/* Fixed Navigation Bar */
+#NavBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh; /* Make it take the full viewport height */
+    width: 25vh; /* Fixed width for the nav bar */
+    background-color: rgb(27, 207, 195); /* Add some background for visibility */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Form Matching Content */
+#formMatching {
+    flex-grow: 1;
+    position:relative;
+    margin-left: 25vh; /* Push the content to the right to account for the fixed nav bar */
+    /* border: 2px solid black; */
+    width: 90vh; 
+    /* Make the form area responsive to the nav bar */
+    padding: 20px;
+    height:100%;
+}
+
+#formMatchingHeader {
+    /* text-align: center; */
+    position:left;
+    margin-top:0;
+    border-bottom: 1px solid black;
+}
+
+.card {
+    /* background-color: #f4f4f4; */
+    padding: 0px;
+    width:30vh;
+    height:30vh;
+    background-color: rgba(81, 73, 73, 0.379);
+    /* margin-bottom: 20px; */
+    border-radius: 5%;
+    border: 1px solid black;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+.disable-select {
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
+  }
+.card:hover {
+    /* background-color: #f4f4f4; */
+    cursor: pointer;
+    background-color: rgb(100, 91, 91);
+    transition:ease-in-out 0.4s;
+    transform: scale(1.1);
+}
+.cardText
+{
+    text-align: center;
+    overflow-wrap:break-word;
+}
+.dynamic-box {
+    display:flex;
+    justify-content: space-evenly;
+    align-content:flex-start;
+    flex-wrap:wrap;
+    gap:2vh 1vh;
+    /* background-color: #eaeaea; */
+    padding: 20px;
+    /* border: 1px solid #ccc; */
+    margin-top: 20px;
+}
+
+/* Style for the formMatchingBar if necessary */
+.formMatchingBar {
+    color: black;
+}
+.eventImageHolder
+{
+    margin:0;
+    height:70%;
+}
+.eventImage{
+    position:relative;
+    width:100%;
+    margin:0;
+    padding:0;
+    height:100%;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    -webkit-user-drag: none;
+}
+.card::-webkit-scrollbar {
+    width: 3%;               /* width of the entire scrollbar */
+  }
+  
+/* .eventImage::-webkit-scrollbar-track {
+  background: orange;   }     /* color of the tracking area */ 
+
+.card::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.153);    /*color of the scroll thumb*/
+  border-radius: 20px;       /* roundness of the scroll thumb */
+  border: 3px solid black;  /* creates padding around scroll thumb */
+}
+

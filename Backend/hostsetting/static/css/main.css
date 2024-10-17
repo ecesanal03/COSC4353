@@ -1,0 +1,99 @@
+html {
+    /*background-image: url('/static/Images/Background.png');
+    background-size: cover;*/
+    height: 100%;
+    width: 100%;
+}
+body{/*"D:\pexels-negative-space-48606.jpg"  blanchedalmond*/
+    position: relative;
+    max-width: 100%;/*scroll bar will appear if change this max to min*/
+    max-height: 100%;
+    background-color:blanchedalmond;
+    background-image: url('/static/Images/BPTinterns.jpeg'),url('/static/Images/Background.png');
+    background-repeat:  no-repeat,no-repeat;
+    background-position: center,center;
+    background-attachment: fixed,fixed;
+    background-size: 40% auto,cover;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.text-center{
+    position: absolute;
+    color:aliceblue;
+    height: 100%;
+    width: 25%;
+    padding-left:5%;
+}/*have to do @media later due to different screen size"*/
+
+
+.center-side{
+    position: absolute;
+    content: 'A little easter egg I put in, love you guys (interns of 2023)';
+    bottom:0;
+    height: 100%;
+    width: 25%;
+    visibility: hidden;
+}
+
+
+.right-side{
+    position: absolute;
+    right:0;
+    width: 25%;
+    overflow-x: hidden
+}
+
+#description{
+    font-size: small;
+}
+
+#text-box{
+    /*width: 100vw;*/
+    background-color: #dddddd;
+    white-space: pre-wrap;
+    color: rgba(87, 86, 86, 0.84);
+    font-size: 14px;
+    width:90%;
+    height: 97vh;
+    border-radius: 10px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+
+#IMG{
+    width: 300px;
+    height: 300px;
+}
+#IMG :hover{
+    background: url('/static/Images/rocket.jpg');
+    /*box-shadow: 0 25px 50px rgba(208, 240, 252, 0.903);*/
+}
+
+#dot {
+    height: 25px;
+    width: 25px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.button {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgb(145, 92, 182);
+    padding: 15px 40px;
+    border-radius: 4px;
+    font-weight: normal;
+    text-transform: uppercase;
+    transition: all 0.2s ease-in-out;
+  }
+
+  
+/*    background-color: aquamarine;
+    background-image: url('/static/Images/BPTinterns.jpeg');
+    background-repeat: no-repeat;
+    background-position: left top;
+    background-attachment: fixed;
+    background-size: auto 100%;
+    background-size:cover;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}*/
