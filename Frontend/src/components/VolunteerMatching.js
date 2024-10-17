@@ -48,7 +48,6 @@ const EventList = () => {
     }
   }, [socket, sendMessage, userEmail]);
 
-  
   const showPopup = (user, eventID, ifRSVP) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
@@ -125,6 +124,17 @@ const EventList = () => {
               className="card disable-select"
               onClick={() => showPopup(user, user.eventID, user.ifRSVP)}
             >
+
+                <div
+                  className="userProfileMatch"
+                  style={{backgroundColor: user.ifRSVP ? 'rgb(66, 231, 45)' : 'red',}}>
+                  {user.ifRSVP ? (
+                    <span title="You matched the request for this event">&#9989;&nbsp;matched&nbsp;</span>
+                  ) : (
+                    <span title="You do not match the request for this event">&#10060;&nbsp;not matched&nbsp;</span>
+                  )}
+                </div>
+
               <div className="eventImageHolder">
                 <img
                   className="eventImage"
@@ -141,6 +151,7 @@ const EventList = () => {
                   {user.eventTime}
                   {user.ifRSVP && <span title="This event has been RSVP'ed">&#9989;</span>}
                 </div>
+
               </div>
             </div>
           ))}

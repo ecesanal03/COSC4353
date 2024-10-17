@@ -75,6 +75,7 @@ class SocketConsumer(WebsocketConsumer):
                     'message': 'User not authenticated. Please log in or sign up.'
                 }))
                 return
+            
 
             # Handle page locations
             if self.front_end_page == "socketinit":
@@ -121,7 +122,23 @@ class SocketConsumer(WebsocketConsumer):
                 VolunteerManagement.main_function(text_data_json)
 
             elif self.front_end_page == "VolunteerHistory":
-                VolunteerHistory.main_function(text_data_json)
+                
+                # VolunteerHistory.main_function(text_data_json)
+                events_data = VolunteerMatching.get_data()
+                if events_data:
+                    print(f"Events data found: {events_data}")  # Log the events data
+                    self.send(text_data=json.dumps({
+                        "populate_data": True,
+                        "events": events_data  # Send event data to frontend
+                    }))
+                else:
+                    print("No events data found.")
+                    self.send(text_data=json.dumps({
+                        "populate_data": False,
+                        "message": "No events available."
+                    }))
+        elif 'action' in text_data_json and self.front_end_page == "VolunteerMatching":
+            VolunteerMatching.main_function(text_data_json)
         else:
             print('No page_loc in received data')  # Debugging statement
         
