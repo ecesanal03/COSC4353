@@ -9,6 +9,8 @@ const Sidebar = () => {
     const handleLogout = () => {
       // Clear session or auth data if needed (e.g., localStorage.clear())
       localStorage.removeItem('authToken'); // Example: removing a token
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userProfile');
   
       // Redirect to the login page
       navigate('/');
@@ -18,9 +20,6 @@ const Sidebar = () => {
       <div style={styles.sidebarContainer}>
         <h2 style={styles.logo}>Volunteer Management</h2>
         <ul style={styles.navList}>
-          <li style={styles.navItem}>
-            <Link to="/dashboard" style={styles.navLink}><FaHome style={styles.icon} />Dashboard</Link>
-          </li>
           <li style={styles.navItem}>
             <Link to="/profile" style={styles.navLink}><FaUser style={styles.icon} />Profile</Link>
           </li>

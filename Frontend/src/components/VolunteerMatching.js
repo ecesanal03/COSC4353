@@ -6,29 +6,47 @@ import "../CSS_styling/volunteerMatching.css";
 const EventList = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+  const hasSentMessage = useRef(false);  // Track if a message has been sent
   var message = {};
+  const userEmail = localStorage.getItem('userEmail');  // Retrieve the user's email from localStorage
+
   useEffect(() => {
-    console.log('this mean message is ready, gogogo')
+    console.log('Component mounted, WebSocket initialized');
+    
     if (socket) {
       const handleMessage = (event) => {
-        message = JSON.parse(event.data);
-        console.log('Message received from server:', message);
+        console.log('WebSocket message received:', event.data);  // Log the message data
+
+        const message = JSON.parse(event.data);
+        console.log('Parsed message:', message);
+
+        // Check if message contains events data and update state
         if (message.hasOwnProperty('events')) {
           setData(message.events);
+          console.log('Events data set to state:', message.events);  // Log the events data
+        } else {
+          console.log('No events found in the message');
         }
-        console.log(Object.values(data));
       };
 
+      // Set up the WebSocket message handler
       socket.onmessage = handleMessage;
-      
 
-      sendMessage({ page_loc: 'VolunteerMatching' });
+      // Send initial message to fetch events when component mounts, including the user's email for authentication
+      if (!hasSentMessage.current && userEmail) {
+        console.log('Sending message to fetch events: { page_loc: "VolunteerMatching", email: userEmail }');
+        sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });  // Include the email for authentication
+        hasSentMessage.current = true;
+      } else if (!userEmail) {
+        console.log('No user email found. Please log in.');
+      }
+
+      // Clean up WebSocket listener on unmount
       return () => {
-        socket.onmessage = null; // Cleanup on unmount
+        socket.onmessage = null;
       };
     }
-  }, [socket, sendMessage]);
+  }, [socket, sendMessage, userEmail]);
 
   
   const showPopup = (user, eventID, ifRSVP) => {

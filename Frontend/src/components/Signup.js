@@ -1,10 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useWebSocket } from '../WebSocketContext.js';
+
+
 const Signup = () => {
-  const [data, setData] = useState({});
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');  // For displaying error messages
+  const [hasSubmitted, setHasSubmitted] = useState(false); // To track submission attempt
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+  const hasSentMessage = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (socket) {
@@ -12,31 +18,35 @@ const Signup = () => {
         const message = JSON.parse(event.data);
         console.log('Message received from server:', message);
         
-        if (message.hasOwnProperty('events')) {
-          setData(message.events);
+        if (message.hasOwnProperty('status')) {
+          if (message.status === 'success') {
+            // Navigate to profile on successful registration
+            navigate('/profile');
+          } else {
+            // Display the error message
+            setErrorMessage(message.message);
+          }
         }
       };
 
       socket.onmessage = handleMessage;
 
-      // Only send message if it's not already sent
-      if (!hasSentMessage.current) {
-        sendMessage({ page_loc: 'VolunteerSignup' });
-        hasSentMessage.current = true; // Prevent sending it again
-      }
-
       return () => {
         socket.onmessage = null; // Cleanup on unmount
       };
     }
-  }, [socket, sendMessage]);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  }, [socket, sendMessage, navigate]);
 
   const handleRegister = () => {
-    // Handle registration logic
-    navigate('/profile');
+    setHasSubmitted(true);  // Mark as submitted
+
+    if (email && password) {
+      // Send registration data to backend
+      sendMessage({ page_loc: 'VolunteerSignup', email, password });
+    } else {
+      // If fields are empty, set a generic error message
+      setErrorMessage('Please fill out both fields');
+    }
   };
 
   return (
@@ -58,6 +68,7 @@ const Signup = () => {
         required
         style={styles.input}
       />
+      {errorMessage && hasSubmitted && <p style={{ color: 'red' }}>{errorMessage}</p>}  {/* Only display if submitted */}
       <button onClick={handleRegister} style={styles.button}>Register</button>
       <p>Already have an account? <Link to="/">Login here</Link></p>
     </div>
