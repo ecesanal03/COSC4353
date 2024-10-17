@@ -1,37 +1,48 @@
 import React, {  useEffect, useState, useRef  } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useWebSocket } from '../WebSocketContext.js';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // For displaying error messages
-  const [hasSubmitted, setHasSubmitted] = useState(false); // To track submission attempt
+  const [errorMessage, setErrorMessage] = useState('');
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false);
   const navigate = useNavigate();
+  const location = useLocation();  // Access the state passed by the redirect
+
+  useEffect(() => {
+    if (location.state && location.state.message) {
+      setErrorMessage(location.state.message);  // Set the error message to the one passed by the redirect
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (socket) {
       const handleMessage = (event) => {
         const message = JSON.parse(event.data);
         console.log('Message received from server:', message);
-  
+
         if (message.hasOwnProperty('status') && message.status === 'success') {
+          // Clear any old profile or user data
+          localStorage.removeItem('userProfile');  // Clear old profile
+          localStorage.removeItem('userEmail');    // Clear old email
+
           // Store the logged-in user's email in localStorage
-          localStorage.setItem('userEmail', email);  // Save email for future use
+          localStorage.setItem('userEmail', email);  // Save new user's email
+
+          // If the user has a profile, save it
           if (message.profile) {
-            // Save the profile in localStorage for future sessions
             localStorage.setItem('userProfile', JSON.stringify(message.profile));
             navigate('/profile', { state: { profile: message.profile } });
           } else {
-            navigate('/profile');  // Redirect to profile creation if no profile exists
+            // If no profile exists, redirect to a clean profile page
+            navigate('/profile');
           }
         } else {
-          setErrorMessage(message.message);
+          setErrorMessage(message.message);  // Show error if login fails
         }
       };
-  
+
       socket.onmessage = handleMessage;
       return () => {
         socket.onmessage = null;
@@ -40,13 +51,10 @@ const Login = () => {
   }, [socket, sendMessage, navigate, email]);
 
   const handleLogin = () => {
-    setHasSubmitted(true);  // Mark as submitted
-
     if (email && password) {
       // Send login data to backend
       sendMessage({ page_loc: 'VolunteerLogin', email, password });
     } else {
-      // If fields are empty, set a generic error message
       setErrorMessage('Please fill out both fields');
     }
   };
@@ -70,7 +78,7 @@ const Login = () => {
         required
         style={styles.input}
       />
-      {errorMessage && hasSubmitted && <p style={{ color: 'red' }}>{errorMessage}</p>}  {/* Only display if submitted */}
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       <button onClick={handleLogin} style={styles.button}>Login</button>
       <p>Don't have an account? <Link to="/signup">Signup here</Link></p>
     </div>

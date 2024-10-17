@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 const Profile = () => {
   const { socket, sendMessage } = useWebSocket();
   const location = useLocation();
+  // Check if there's a profile in localStorage, or start with an empty profile
   const existingProfile = location.state?.profile || JSON.parse(localStorage.getItem('userProfile')) || {};
   const email = localStorage.getItem('userEmail');  // Get the logged-in user's email from localStorage
 

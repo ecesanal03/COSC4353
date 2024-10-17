@@ -10,6 +10,7 @@ import VolunteerHistory from './components/VolunteerHistory';
 import Layout from './components/Layout';
 import { NotificationProvider } from './components/NotificationContext';
 import NotificationPanel from './components/NotificationPanel';
+import PrivateRoute from './components/PrivateRoute'; // Import the PrivateRoute component
 
 
 function App() {
@@ -25,38 +26,49 @@ function App() {
         <Router>
           <NotificationPanel />
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+
+            {/* Protected Routes */}
             <Route
               path="/profile"
               element={
-                <Layout>
-                  <Profile />
-                </Layout>
+                <PrivateRoute>
+                  <Layout>
+                    <Profile />
+                  </Layout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/event-management"
               element={
-                <Layout>
-                  <EventManagement />
-                </Layout>
+                <PrivateRoute>
+                  <Layout>
+                    <EventManagement />
+                  </Layout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/volunteer-matching"
               element={
-                <Layout>
-                  <VolunteerMatching onRSVP={handleRSVP} />
-                </Layout>
+                <PrivateRoute>
+                  <Layout>
+                    <VolunteerMatching onRSVP={handleRSVP} />
+                  </Layout>
+                </PrivateRoute>
               }
             />
             <Route
               path="/volunteer-history"
               element={
-                <Layout>
-                  <VolunteerHistory history={volunteerHistory} />
-                </Layout>
+                <PrivateRoute>
+                  <Layout>
+                    <VolunteerHistory history={volunteerHistory} />
+                  </Layout>
+                </PrivateRoute>
               }
             />
           </Routes>

@@ -11,6 +11,7 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from hostsetting.GroupFileWork.VolunteerSignup import VolunteerSignup
+from hostsetting.GroupFileWork.VolunteerSignup import user_data_store
 from hostsetting.GroupFileWork.VolunteerLogin import VolunteerLogin
 from hostsetting.GroupFileWork.VolunteerProfile import VolunteerProfile
 
@@ -49,6 +50,13 @@ class SocketConsumer(WebsocketConsumer):
     def disconnect(self, code):
         """handle disconnection"""       
         pass
+    
+    def is_authenticated(self, text_data_json):
+        """Check if the user is authenticated based on the email in user_data_store"""
+        email = text_data_json.get('email')
+        if email and email in user_data_store:
+            return True
+        return False
 
     def receive(self, text_data):
         """Handle message from users"""
@@ -59,6 +67,16 @@ class SocketConsumer(WebsocketConsumer):
             self.front_end_page = text_data_json['page_loc']
             print(f'Page location received: {self.front_end_page}')  # Debugging statement
 
+            # Check for user authentication before proceeding
+            if self.front_end_page != "VolunteerSignup" and not self.is_authenticated(text_data_json):
+                # If the user is not authenticated and is not on the signup page, return an error
+                self.send(text_data=json.dumps({
+                    'status': 'error',
+                    'message': 'User not authenticated. Please log in or sign up.'
+                }))
+                return
+
+            # Handle page locations
             if self.front_end_page == "socketinit":
                 self.send(text_data=json.dumps({"dummy": True}))
 
@@ -75,10 +93,23 @@ class SocketConsumer(WebsocketConsumer):
                 self.send(text_data=json.dumps(response))
 
             elif self.front_end_page == "VolunteerMatching":
-                self.send(text_data=json.dumps({
-                    "populate_data": True,
-                    "events": VolunteerMatching.get_data()
-                }))
+                # Log when VolunteerMatching is triggered
+                print("VolunteerMatching triggered. Fetching events data...")
+
+                # Fetch data using VolunteerMatching.get_data()
+                events_data = VolunteerMatching.get_data()
+                if events_data:
+                    print(f"Events data found: {events_data}")  # Log the events data
+                    self.send(text_data=json.dumps({
+                        "populate_data": True,
+                        "events": events_data  # Send event data to frontend
+                    }))
+                else:
+                    print("No events data found.")
+                    self.send(text_data=json.dumps({
+                        "populate_data": False,
+                        "message": "No events available."
+                    }))
 
             elif self.front_end_page == "VolunteerProfile":
                 print('VolunteerProfile triggered')  # Debugging statement
