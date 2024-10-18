@@ -6,49 +6,43 @@ import "../CSS_styling/volunteerMatching.css";
 const EventList = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false);  // Track if a message has been sent
+  const hasSentMessage = useRef(false); 
   var message = {};
-  const userEmail = localStorage.getItem('userEmail');  // Retrieve the user's email from localStorage
+  const userEmail = localStorage.getItem('userEmail');
 
   useEffect(() => {
     console.log('Component mounted, WebSocket initialized');
     
     if (socket) {
       const handleMessage = (event) => {
-        console.log('WebSocket message received:', event.data);  // Log the message data
+        console.log('WebSocket message received:', event.data);
 
         const message = JSON.parse(event.data);
         console.log('Parsed message:', message);
 
-        // Check if message contains events data and update state
         if (message.hasOwnProperty('events')) {
           setData(message.events);
-          console.log('Events data set to state:', message.events);  // Log the events data
+          console.log('Events data set to state:', message.events);
         } else {
           console.log('No events found in the message');
         }
       };
-
-      // Set up the WebSocket message handler
       socket.onmessage = handleMessage;
-
-      // Send initial message to fetch events when component mounts, including the user's email for authentication
       if (!hasSentMessage.current && userEmail) {
         console.log('Sending message to fetch events: { page_loc: "VolunteerMatching", email: userEmail }');
-        sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });  // Include the email for authentication
+        sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });
         hasSentMessage.current = true;
       } else if (!userEmail) {
         console.log('No user email found. Please log in.');
       }
 
-      // Clean up WebSocket listener on unmount
       return () => {
         socket.onmessage = null;
       };
     }
   }, [socket, sendMessage, userEmail]);
 
-  const showPopup = (user, eventID, ifRSVP) => {
+  const showPopup = (user, eventID, ifRSVP, ifMatched) => {
     const swalWithBootstrapButtons = Swal.mixin({
       customClass: {
         confirmButton: 'btn btn-success',
@@ -122,13 +116,13 @@ const EventList = () => {
             <div
               key={user.eventID}
               className="card disable-select"
-              onClick={() => showPopup(user, user.eventID, user.ifRSVP)}
+              onClick={() => showPopup(user, user.eventID, user.ifRSVP, user.ifMatched)}
             >
 
                 <div
                   className="userProfileMatch"
-                  style={{backgroundColor: user.ifRSVP ? 'rgb(66, 231, 45)' : 'red',}}>
-                  {user.ifRSVP ? (
+                  style={{backgroundColor: user.ifMatched ? 'rgb(66, 231, 45)' : 'red',}}>
+                  {user.ifMatched ? (
                     <span title="You matched the request for this event">&#9989;&nbsp;matched&nbsp;</span>
                   ) : (
                     <span title="You do not match the request for this event">&#10060;&nbsp;not matched&nbsp;</span>
@@ -151,7 +145,21 @@ const EventList = () => {
                   {user.eventTime}
                   {user.ifRSVP && <span title="This event has been RSVP'ed">&#9989;</span>}
                 </div>
-
+                  <div>
+                    <b>Experienced: </b>
+                    {user.volunteerSkill.length > 0 ? 
+                    (
+                      user.volunteerSkill.map((item, index) => (
+                        <span key={index}>
+                          {item}
+                          {index < user.volunteerSkill.length - 1 && ', '}
+                        </span>
+                      ))
+                    ) : 
+                    (
+                      <div>N/A</div>
+                    )}
+                </div>
               </div>
             </div>
           ))}

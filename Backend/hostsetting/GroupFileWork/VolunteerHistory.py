@@ -31,15 +31,14 @@ def function_display():
     print("Heyyyyyyyyyyyyyyyyyyyyyyyy, rsvp'ed")
 
 def get_data():
-    return list(data.values())  # Return a list of events
+    return list(data.values()) 
 
 def set_data(eventID, ifRSVP_result):
     data[eventID]['ifRSVP'] = ifRSVP_result
 
-# Function to send data via WebSocket
 def send_event_data(websocket):
-    events = get_data()  # Get the list of events
+    events = get_data()
     message = {
         "events": events
     }
-    websocket.send(json.dumps(message))  # Send as JSON
+    websocket.send(json.dumps(message))

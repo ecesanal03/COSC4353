@@ -1,8 +1,7 @@
 import json
 import re
 
-# In-memory storage for users
-user_data_store = {}
+user_data_store = {'123456789@gmail.com':'123456789'}
 
 class VolunteerSignup:
     
@@ -17,7 +16,6 @@ class VolunteerSignup:
 
     @staticmethod
     def save_user_data(email, password):
-        # Save user data in the dictionary
         if email in user_data_store:
             return {'status': 'error', 'message': 'Email already registered'}
         
@@ -28,7 +26,7 @@ class VolunteerSignup:
     def main_function(data):
         email = data.get('email', '')
         password = data.get('password', '')
-        print(f"Received email: {email}, password: {password}")  # Debugging statement
+        print(f"Received email: {email}, password: {password}")
         if not VolunteerSignup.validate_email(email):
             response = {'status': 'error', 'message': 'Invalid email format'}
         elif not VolunteerSignup.validate_password(password):

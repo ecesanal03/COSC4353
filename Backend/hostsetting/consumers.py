@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 from hostsetting.GroupFileWork.VolunteerSignup import VolunteerSignup
 from hostsetting.GroupFileWork.VolunteerSignup import user_data_store
 from hostsetting.GroupFileWork.VolunteerLogin import VolunteerLogin
-from hostsetting.GroupFileWork.VolunteerProfile import VolunteerProfile
+from hostsetting.GroupFileWork.VolunteerProfile import VolunteerProfile, profile_data_store
 
 
 from .GroupFileWork import VolunteerMatching,VolunteerHistory,VolunteerManagement
@@ -25,7 +25,7 @@ class SocketConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.front_end_page = ""
-
+        self.profile_need_update = True#need this to update when first enter page or user press submit
 
     def connect(self):    
         self.room_name = 'event'
@@ -61,15 +61,13 @@ class SocketConsumer(WebsocketConsumer):
     def receive(self, text_data):
         """Handle message from users"""
         text_data_json = json.loads(text_data)
-        print('received json', text_data_json)  # Debugging statement
-
+        print('received json', text_data_json) 
+        
         if 'page_loc' in text_data_json:
             self.front_end_page = text_data_json['page_loc']
-            print(f'Page location received: {self.front_end_page}')  # Debugging statement
+            print(f'Page location received: {self.front_end_page}') 
 
-            # Check for user authentication before proceeding
             if self.front_end_page != "VolunteerSignup" and not self.is_authenticated(text_data_json):
-                # If the user is not authenticated and is not on the signup page, return an error
                 self.send(text_data=json.dumps({
                     'status': 'error',
                     'message': 'User not authenticated. Please log in or sign up.'
@@ -82,28 +80,33 @@ class SocketConsumer(WebsocketConsumer):
                 self.send(text_data=json.dumps({"dummy": True}))
 
             elif self.front_end_page == "VolunteerSignup":
-                print('VolunteerSignup triggered')  # Debugging statement
+                print('VolunteerSignup triggered')
                 response = VolunteerSignup.main_function(text_data_json)
-                print(f'Sending Signup Response: {response}')  # Debugging statement
+                print(f'Sending Signup Response: {response}')
                 self.send(text_data=json.dumps(response))
 
             elif self.front_end_page == "VolunteerLogin":
-                print('VolunteerLogin triggered')  # Debugging statement
+                print('VolunteerLogin triggered') 
                 response = VolunteerLogin.main_function(text_data_json)
-                print(f'Sending Login Response: {response}')  # Debugging statement
+                print(f'Sending Login Response: {response}')
                 self.send(text_data=json.dumps(response))
 
             elif self.front_end_page == "VolunteerMatching":
-                # Log when VolunteerMatching is triggered
-                print("VolunteerMatching triggered. Fetching events data...")
 
-                # Fetch data using VolunteerMatching.get_data()
+                print("VolunteerMatching triggered. Fetching events data...")
+                if self.profile_need_update == True:
+                    self.profile_need_update = False
+                    print(profile_data_store)
+                    email = text_data_json.get('email')
+                    if email in profile_data_store:
+                        VolunteerMatching.if_matched(profile_data_store[text_data_json.get('email')])
+                            
                 events_data = VolunteerMatching.get_data()
                 if events_data:
-                    print(f"Events data found: {events_data}")  # Log the events data
+                    print(f"Events data found: {events_data}")
                     self.send(text_data=json.dumps({
                         "populate_data": True,
-                        "events": events_data  # Send event data to frontend
+                        "events": events_data
                     }))
                 else:
                     print("No events data found.")
@@ -113,23 +116,23 @@ class SocketConsumer(WebsocketConsumer):
                     }))
 
             elif self.front_end_page == "VolunteerProfile":
-                print('VolunteerProfile triggered')  # Debugging statement
+                print('VolunteerProfile triggered')
                 response = VolunteerProfile.main_function(text_data_json)
-                print(f'Profile response: {response}')  # Debugging statement
+                print(f'Profile response: {response}') 
+                if response['status'] == 'success':
+                    self.profile_need_update = True
                 self.send(text_data=json.dumps(response))
 
             elif self.front_end_page == "VolunteerManagement":
                 VolunteerManagement.main_function(text_data_json)
 
             elif self.front_end_page == "VolunteerHistory":
-                
-                # VolunteerHistory.main_function(text_data_json)
                 events_data = VolunteerMatching.get_data()
                 if events_data:
-                    print(f"Events data found: {events_data}")  # Log the events data
+                    print(f"Events data found: {events_data}") 
                     self.send(text_data=json.dumps({
                         "populate_data": True,
-                        "events": events_data  # Send event data to frontend
+                        "events": events_data
                     }))
                 else:
                     print("No events data found.")
@@ -140,15 +143,9 @@ class SocketConsumer(WebsocketConsumer):
         elif 'action' in text_data_json and self.front_end_page == "VolunteerMatching":
             VolunteerMatching.main_function(text_data_json)
         else:
-            print('No page_loc in received data')  # Debugging statement
+            print('No page_loc in received data')
         
             
-
-
-
-#state modify function and send data back for color display
-
-#recieve should call the function to send data to, that function also modify value
 
 
 

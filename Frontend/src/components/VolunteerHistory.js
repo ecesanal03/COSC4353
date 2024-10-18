@@ -4,42 +4,38 @@ import { useWebSocket } from '../WebSocketContext.js';
 const VolunteerHistory = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false);  // Track if a message has been sent
+  const hasSentMessage = useRef(false);
   var message = {};
-  const userEmail = localStorage.getItem('userEmail');  // Retrieve the user's email from localStorage
+  const userEmail = localStorage.getItem('userEmail'); 
 
   useEffect(() => {
     console.log('Component mounted, WebSocket initialized');
     
     if (socket) {
       const handleMessage = (event) => {
-        console.log('WebSocket message received:', event.data);  // Log the message data
+        console.log('WebSocket message received:', event.data);
 
         const message = JSON.parse(event.data);
         console.log('Parsed message:', message);
 
-        // Check if message contains events data and update state
         if (message.hasOwnProperty('events')) {
           setData(message.events);
-          console.log('Events data set to state:', message.events);  // Log the events data
+          console.log('Events data set to state:', message.events); 
         } else {
           console.log('No events found in the message');
         }
       };
 
-      // Set up the WebSocket message handler
       socket.onmessage = handleMessage;
 
-      // Send initial message to fetch events when component mounts, including the user's email for authentication
       if (!hasSentMessage.current && userEmail) {
         console.log('Sending message to fetch events: { page_loc: "VolunteerHistory", email: userEmail }');
-        sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });  // Include the email for authentication
+        sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });
         hasSentMessage.current = true;
       } else if (!userEmail) {
         console.log('No user email found. Please log in.');
       }
 
-      // Clean up WebSocket listener on unmount
       return () => {
         socket.onmessage = null;
       };
