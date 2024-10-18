@@ -1,17 +1,17 @@
-Setup and running step, Vuong Duong
+**Setup and running step, Vuong Duong****
 
 
 
 If already set up, ignore this step:
 
-For react install, will need:
+**For react install, will need:**
 
 react i
 react i react-scripts
 npm i, npm install sweetalert-react, npm i react-datepicker, npm i react-select, npm i date-fns,npm install react-icons, npm i react-router-dom@latest
 
 
-For Django install will need:
+**For Django install will need:**
 python -m pip install Django
 python -m pip install -U channels["daphne"]
 pip install ctime
@@ -24,7 +24,7 @@ pip install redmail
 
 
 
-To Run:
+**To Run:**
 CD into Backend file first
 python manage.py runserver 0.0.0.0:8000
 
