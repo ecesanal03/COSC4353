@@ -20,14 +20,20 @@ const EventList = () => {
         const message = JSON.parse(event.data);
         console.log('Parsed message:', message);
 
-        if (message.hasOwnProperty('events')) {
+        if (message.status === 'new_event' && message.events) {
+          console.log('New event data received:', message.events);
+          setData(message.events);  // Update the state with the new event list
+        } else if (message.hasOwnProperty('events')) {
           setData(message.events);
           console.log('Events data set to state:', message.events);
         } else {
           console.log('No events found in the message');
         }
       };
+      
       socket.onmessage = handleMessage;
+
+      // Initial fetch of events
       if (!hasSentMessage.current && userEmail) {
         console.log('Sending message to fetch events: { page_loc: "VolunteerMatching", email: userEmail }');
         sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });
@@ -65,7 +71,12 @@ const EventList = () => {
             ...prevData,
             [eventID]: { ...prevData[eventID], ifRSVP: false }
           }));
-          sendMessage({ eventID, action: false });
+          sendMessage({
+            page_loc: 'VolunteerMatching',  // Add this field
+            eventID: eventID,
+            action: 'cancel_rsvp',  
+            email: userEmail  // Include user email for authentication
+          });
           swalWithBootstrapButtons.fire({
             title: 'Canceled!',
             text: 'Your RSVP has been canceled.',
@@ -88,7 +99,12 @@ const EventList = () => {
             ...prevData,
             [eventID]: { ...prevData[eventID], ifRSVP: true }
           }));
-            sendMessage({ eventID, action: true });
+          sendMessage({
+            page_loc: 'VolunteerMatching',  // Add this field
+            eventID: eventID,
+            action: 'rsvp',  
+            email: userEmail  // Include user email for authentication
+          });
           swalWithBootstrapButtons.fire({
             title: "RSVP'ed!",
             text: 'Your RSVP has been logged.',
@@ -140,25 +156,29 @@ const EventList = () => {
                 <div className="eventName" id={user.eventID} style={{ fontWeight: 'bolder' }}>
                   {user.eventName}
                 </div>
-                <div className="eventLocation">{user.eventLocation}</div>
-                <div className="eventTime">
-                  {user.eventTime}
+                <div className="location">{user.location}</div>
+                <div className="eventDate">
+                  {new Date(user.eventDate).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',  
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                  })}
                   {user.ifRSVP && <span title="This event has been RSVP'ed">&#9989;</span>}
                 </div>
-                  <div>
-                    <b>Experienced: </b>
-                    {user.volunteerSkill.length > 0 ? 
-                    (
-                      user.volunteerSkill.map((item, index) => (
-                        <span key={index}>
-                          {item}
-                          {index < user.volunteerSkill.length - 1 && ', '}
-                        </span>
-                      ))
-                    ) : 
-                    (
-                      <div>N/A</div>
-                    )}
+                <div>
+                  <b>Experienced In: </b>
+                  {Array.isArray(user.requiredSkills) && user.requiredSkills.length > 0 ? (
+                    user.requiredSkills.map((item, index) => (
+                      <span key={index}>
+                        {item}
+                        {index < user.requiredSkills.length - 1 && ', '}
+                      </span>
+                    ))
+                  ) : (
+                    <div>N/A</div>
+                  )}
                 </div>
               </div>
             </div>

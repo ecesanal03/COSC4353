@@ -59,8 +59,16 @@ const VolunteerHistory = () => {
                                           {Object.entries(data).map(([eventID, row], index) => (
                           <tr key={eventID} style={styles.tr}>
                               <td style={styles.td}>{row.eventName}</td>
-                              <td style={styles.td}>{row.eventLocation}</td>
-                              <td style={styles.td}>{row.eventTime}</td>
+                              <td style={styles.td}>{row.location}</td>
+                              <td style={styles.td}>
+                                {new Date(row.eventDate).toLocaleString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',  // Full month name
+                                  day: 'numeric', // Day of the month
+                                  hour: '2-digit', // Hours
+                                  minute: '2-digit', // Minutes
+                                })}
+                              </td>
                               <td style={styles.td}>{row.ifRSVP ? 'RSVP\'ed' : 'Not RSVP\'ed'}</td>
                           </tr>
                       ))}
