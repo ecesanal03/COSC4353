@@ -29,6 +29,7 @@ class SocketConsumer(WebsocketConsumer):
         self.profile_need_update = True#need this to update when first enter page or user press submit
 
     def connect(self):    
+        VolunteerSignup.initialize_admins()
         self.room_name = 'event'
         self.room_group_name = self.room_name+"_sharif"
         async_to_sync(self.channel_layer.group_add)(

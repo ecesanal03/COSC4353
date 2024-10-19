@@ -15,10 +15,9 @@ class EventManagement:
         event_image = event_data.get('eventImage')
         if_rsvp = event_data.get('ifRSVP', False)
 
-        # Generate a unique ID for the event
-        event_id = str(uuid.uuid4())  # Generate a unique event ID using UUID
-
-        # Check if an event with the same name, location, and date already exists
+       
+        event_id = str(uuid.uuid4())  
+        
         for event in event_data_store.values():
             if (
                 event['eventName'] == event_name and

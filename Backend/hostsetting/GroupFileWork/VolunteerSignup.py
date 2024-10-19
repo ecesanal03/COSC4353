@@ -1,9 +1,27 @@
 import json
 import re
 
-user_data_store = {'123456789@gmail.com':'123456789'}
+user_data_store = {}
 
 class VolunteerSignup:
+    
+    admin_credentials = {
+        'admin1@example.com': {
+            'password': 'AdminPassword123',
+            'role': 'admin'
+        },
+        'admin2@example.com': {
+            'password': 'AdminPassword456',
+            'role': 'admin'
+        }
+    }
+
+    @staticmethod
+    def initialize_admins():
+        for email, info in VolunteerSignup.admin_credentials.items():
+            if email not in user_data_store:
+                user_data_store[email] = info
+                print(f"Admin {email} added to user_data_store.")
     
     @staticmethod
     def validate_email(email):
@@ -19,11 +37,15 @@ class VolunteerSignup:
         if email in user_data_store:
             return {'status': 'error', 'message': 'Email already registered'}
         
-        user_data_store[email] = password
+        user_data_store[email] = {
+            'password': password,
+            'role': 'user'  
+        }
         return {'status': 'success', 'message': 'User registered successfully'}
 
     @staticmethod
     def main_function(data):
+        VolunteerSignup.initialize_admins()
         email = data.get('email', '')
         password = data.get('password', '')
         print(f"Received email: {email}, password: {password}")

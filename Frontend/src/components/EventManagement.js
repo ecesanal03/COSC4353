@@ -1,27 +1,37 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useNotification } from './NotificationContext'; // Import the notification context
+import { useNotification } from './NotificationContext'; 
 import { useWebSocket } from '../WebSocketContext.js';
 
 
 const EventManagement = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+  const hasSentMessage = useRef(false); 
+  const navigate = useNavigate();
 
   const [eventName, setEventName] = useState('');
   const [eventDescription, setEventDescription] = useState('');
-  const [location, setLocation] = useState(''); // Just a simple text input for location now
+  const [location, setLocation] = useState(''); 
   const [requiredSkills, setRequiredSkills] = useState([]);
   const [urgency, setUrgency] = useState('');
   const [eventDate, setEventDate] = useState(null);
 
-  // Get user email from localStorage (assuming you store it there after login)
+  
   const userEmail = localStorage.getItem('userEmail');
+  const userRole = localStorage.getItem('userRole');
 
   const { addNotification } = useNotification(); // Destructure the addNotification function
+
+  useEffect(() => {
+    if (userRole !== 'admin') {
+      addNotification('Access denied. Only administrators can access this page.', 'error');
+      navigate('/profile'); // Redirect to home page or another appropriate page
+    }
+  }, [userRole, navigate, addNotification]);
 
   const skillsOptions = [
     { value: 'leadership', label: 'Leadership' },
@@ -71,7 +81,7 @@ const EventManagement = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Ensure we have the user's email before proceeding
+    
     if (!userEmail) {
       addNotification('You need to log in to create an event.', 'error');
       return;
@@ -97,7 +107,7 @@ const EventManagement = () => {
     // Trigger a notification for a new event assignment
     addNotification(`New event "${eventName}" has been assigned!`, 'info');
 
-    // Optionally reset form fields after submission
+    
     setEventName('');
     setEventDescription('');
     setLocation('');
