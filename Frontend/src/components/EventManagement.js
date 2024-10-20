@@ -1,20 +1,135 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useNotification } from './NotificationContext'; // Import the notification context
+import { useNotification } from './NotificationContext'; 
 import { useWebSocket } from '../WebSocketContext.js';
+
+
 const EventManagement = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
-  const hasSentMessage = useRef(false); // Use a ref to track if the message has been sent
+  const hasSentMessage = useRef(false); 
+  const navigate = useNavigate();
+
+  const [eventName, setEventName] = useState('');
+  const [eventDescription, setEventDescription] = useState('');
+  const [location, setLocation] = useState(''); 
+  const [requiredSkills, setRequiredSkills] = useState([]);
+  const [urgency, setUrgency] = useState('');
+  const [eventDate, setEventDate] = useState(null);
+
+  
+  const userEmail = localStorage.getItem('userEmail');
+  const userRole = localStorage.getItem('userRole');
+
+  const { addNotification } = useNotification(); // Destructure the addNotification function
+
+  useEffect(() => {
+    if (userRole !== 'admin') {
+      addNotification('Access denied. Only administrators can access this page.', 'error');
+      navigate('/profile'); // Redirect to home page or another appropriate page
+    }
+  }, [userRole, navigate, addNotification]);
+
+  const skillsOptions = [
+    { value: 'leadership', label: 'Leadership' },
+    { value: 'organization', label: 'Organization' },
+    { value: 'communication', label: 'Communication' },
+    { value: 'teaching', label: 'Teaching' },
+    { value: 'first_aid', label: 'First Aid' },
+    { value: 'event_planning', label: 'Event Planning' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'fundraising', label: 'Fundraising' },
+    { value: 'graphic_design', label: 'Graphic Design' },
+    { value: 'web_development', label: 'Web Development' },
+    { value: 'social_media', label: 'Social Media Management' },
+    { value: 'public_speaking', label: 'Public Speaking' },
+    { value: 'data_entry', label: 'Data Entry' },
+    { value: 'customer_service', label: 'Customer Service' },
+    { value: 'translation', label: 'Translation' },
+    { value: 'photography', label: 'Photography' },
+    { value: 'videography', label: 'Videography' },
+    { value: 'writing', label: 'Writing' },
+    { value: 'editing', label: 'Editing' },
+    { value: 'project_management', label: 'Project Management' },
+    { value: 'conflict_resolution', label: 'Conflict Resolution' },
+    { value: 'research', label: 'Research' },
+    { value: 'mentoring', label: 'Mentoring' },
+    { value: 'counseling', label: 'Counseling' },
+    { value: 'budget_management', label: 'Budget Management' },
+    { value: 'coaching', label: 'Coaching' },
+    { value: 'technical_support', label: 'Technical Support' },
+    { value: 'logistics', label: 'Logistics' },
+    { value: 'cooking', label: 'Cooking' },
+    { value: 'tutoring', label: 'Tutoring' },
+    { value: 'sales', label: 'Sales' },
+    { value: 'accounting', label: 'Accounting' },
+    { value: 'administration', label: 'Administration' },
+    { value: 'graphic_illustration', label: 'Graphic Illustration' },
+    { value: 'public_relations', label: 'Public Relations' },
+    { value: 'volunteer_management', label: 'Volunteer Management' },
+  ];
+
+  const urgencyOptions = [
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+  ];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    
+    if (!userEmail) {
+      addNotification('You need to log in to create an event.', 'error');
+      return;
+    }
+
+    // Construct the event data to send via WebSocket
+    const eventData = {
+      page_loc: 'VolunteerManagement',
+      action: 'create_event',
+      eventName,
+      eventDescription,
+      location,
+      requiredSkills,
+      urgency,
+      eventDate: eventDate ? eventDate.toISOString() : null, // Format date to ISO string
+      email: userEmail,
+      eventImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s'
+    };
+
+    // Send the event creation request via WebSocket
+    sendMessage(eventData);
+
+    // Trigger a notification for a new event assignment
+    addNotification(`New event "${eventName}" has been assigned!`, 'info');
+
+    
+    setEventName('');
+    setEventDescription('');
+    setLocation('');
+    setRequiredSkills([]);
+    setUrgency('');
+    setEventDate(null);
+  };
+
+  /* const handleReminder = () => {
+    if (!eventDate) {
+      addNotification('Please select an event date before sending a reminder.', 'error');
+    } else {
+      addNotification('Reminder: You have an event tomorrow!', 'info');
+    }
+  }; */
 
   useEffect(() => {
     if (socket) {
       const handleMessage = (event) => {
         const message = JSON.parse(event.data);
         console.log('Message received from server:', message);
-        
+
         if (message.hasOwnProperty('events')) {
           setData(message.events);
         }
@@ -24,7 +139,7 @@ const EventManagement = () => {
 
       // Only send message if it's not already sent
       if (!hasSentMessage.current) {
-        sendMessage({ page_loc: 'VolunteerManagement' });
+        sendMessage({ page_loc: 'VolunteerManagement', email: userEmail }); // Include the user's email when fetching events
         hasSentMessage.current = true; // Prevent sending it again
       }
 
@@ -32,65 +147,7 @@ const EventManagement = () => {
         socket.onmessage = null; // Cleanup on unmount
       };
     }
-  }, [socket, sendMessage]);
-  const [eventName, setEventName] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
-  const [location, setLocation] = useState('');
-  const [requiredSkills, setRequiredSkills] = useState([]);
-  const [urgency, setUrgency] = useState('');
-  const [eventDate, setEventDate] = useState(null);
-
-  const { addNotification } = useNotification(); // Destructure the addNotification function
-
-  const skillsOptions = [
-    { value: 'leadership', label: 'Leadership' },
-    { value: 'organization', label: 'Organization' },
-    { value: 'communication', label: 'Communication' },
-    // Add more skill options as necessary
-  ];
-
-  const urgencyOptions = [
-    { value: 'low', label: 'Low' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'high', label: 'High' },
-  ];
-
-  // Function to handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Trigger a notification for a new event assignment
-    addNotification(`New event "${eventName}" has been assigned!`, 'info');
-
-    // Handle form submission logic
-    console.log({
-      eventName,
-      eventDescription,
-      location,
-      requiredSkills,
-      urgency,
-      eventDate,
-    });
-
-    // Optionally reset form fields after submission
-    setEventName('');
-    setEventDescription('');
-    setLocation('');
-    setRequiredSkills([]);
-    setUrgency('');
-    setEventDate(null);
-  };
-
-  // Function to handle sending a reminder
-  const handleReminder = () => {
-    // Check if the event date exists
-    if (!eventDate) {
-      addNotification('Please select an event date before sending a reminder.', 'error');
-    } else {
-      // Trigger a notification for the reminder
-      addNotification('Reminder: You have an event tomorrow!', 'info');
-    }
-  };
+  }, [socket, sendMessage, userEmail]);
 
   return (
     <div style={styles.pageContainer}>
@@ -113,12 +170,13 @@ const EventManagement = () => {
             required
             style={styles.textarea}
           />
-          <textarea
-            placeholder="Location"
+          <input
+            type="text"
+            placeholder="Enter Event Location"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={(e) => setLocation(e.target.value)} // Simple text input for location
             required
-            style={styles.textarea}
+            style={styles.input}
           />
           <Select
             isMulti
@@ -140,7 +198,11 @@ const EventManagement = () => {
           <DatePicker
             selected={eventDate}
             onChange={(date) => setEventDate(date)}
-            placeholderText="Event Date"
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="MMMM d, yyyy h:mm aa"
+            placeholderText="Select Date & Time"
             required
             style={styles.datepicker}
             className="custom-datepicker"
@@ -150,10 +212,9 @@ const EventManagement = () => {
           </button>
         </form>
 
-        {/* Example buttons to trigger notifications for other actions */}
-        <button onClick={handleReminder} style={styles.reminderButton}>
+        {/* <button onClick={handleReminder} style={styles.reminderButton}>
           Send Event Reminder
-        </button>
+        </button> */}
       </div>
     </div>
   );

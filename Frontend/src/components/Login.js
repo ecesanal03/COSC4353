@@ -29,6 +29,7 @@ const Login = () => {
 
           // Store the logged-in user's email in localStorage
           localStorage.setItem('userEmail', email);  // Save new user's email
+          localStorage.setItem('userRole', message.role);  // Save new user's role
 
           // If the user has a profile, save it
           if (message.profile) {

@@ -1,34 +1,35 @@
-data ={
-  "S15598": {
-    "eventID": "S15598",
-    "ifRSVP": True,
-    "eventImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-    "eventName": "Music Concert",
-    "eventLocation": "Central Park, NY",
-    "eventTime": "2024-09-15 18:00"
-  },
-  "S19586": {
-    "eventID": "S19586",
-    "ifRSVP": False,
-    "eventImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s",
-    "eventName": "Art Exhibition",
-    "eventLocation": "Downtown Gallery, LA",
-    "eventTime": "2024-09-20 10:00"
-  }
-}
+from hostsetting.GroupFileWork.VolunteerManagement import EventManagement
 
+def if_matched(userInfo):
+    """Check if the user's skills match with any events."""
+    events = EventManagement.get_events()  
+    for i in userInfo["skills"]:  
+        for key, value in events.items():
+            # Match the user's skill with the event's required skills
+            if i in value["requiredSkills"]:
+                events[key]["ifMatched"] = True
+            else:
+                events[key]["ifMatched"] = False
 
-def main_function(json):
-    print(json)
-    if (json['action'] == 'rsvp'):
-        function_display()
-    set_data(json['eventID'],json['action'])
-        
-def function_display():
-    print("Heyyyyyyyyyyyyyyyyyyyyyyyy, rsvp'ed")
-    
 def get_data():
-    return data
+    """Get the latest event data from EventManagement."""
+    return EventManagement.get_events()  
 
 def set_data(eventID, ifRSVP_result):
-    data[eventID]['ifRSVP'] = ifRSVP_result
+    """Set RSVP status for a specific event."""
+    events = EventManagement.get_events()  
+    if eventID in events:
+        events[eventID]['ifRSVP'] = ifRSVP_result  
+        EventManagement.update_event(events[eventID])
+
+# Main function for other actions like RSVP
+def main_function(json):
+    """Handle RSVP actions."""
+    if json['action'] == 'rsvp':
+        set_data(json['eventID'], True)  
+    elif json['action'] == 'cancel_rsvp':
+        set_data(json['eventID'], False)  
+
+def function_display():
+    """Example function to display confirmation."""
+    print("Heyyyyyyyyyyyyyyyyyyyyyyyy, rsvp'ed")
