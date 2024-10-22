@@ -83,8 +83,12 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'VolunteerManagement',  # Your PostgreSQL database name
+        'USER': 'postgres',
+        'PASSWORD': 'Qweasdzxc1$',  # Your PostgreSQL password
+        'HOST': 'localhost',  # If using locally, otherwise provide your DB host
+        'PORT': '5432',
     }
 }
 

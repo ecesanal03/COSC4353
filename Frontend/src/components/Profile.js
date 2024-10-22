@@ -46,7 +46,8 @@ const Profile = () => {
     return skills.map(skill => skillOptions.find(option => option.value === skill) || { value: skill, label: skill });
   };
 
-  const [fullName, setFullName] = useState(existingProfile.fullName || '');
+  const [firstName, setFirstName] = useState(existingProfile.firstName || '');
+  const [lastName, setLastName] = useState(existingProfile.lastName || '');
   const [address1, setAddress1] = useState(existingProfile.address1 || '');
   const [address2, setAddress2] = useState(existingProfile.address2 || '');
   const [city, setCity] = useState(existingProfile.city || '');
@@ -68,7 +69,8 @@ const Profile = () => {
             alert('Profile saved successfully!');
             // Update profile in localStorage after successful submission
             localStorage.setItem('userProfile', JSON.stringify({
-              fullName,
+              firstName,
+              lastName,
               address1,
               address2,
               city,
@@ -90,18 +92,26 @@ const Profile = () => {
         socket.onmessage = null;
       };
     }
-  }, [socket, fullName, address1, address2, city, state, zipCode, skills, preferences, availability]);
+  }, [socket, firstName, lastName, address1, address2, city, state, zipCode, skills, preferences, availability]);
 
   const handleSubmit = () => {
-    if (!fullName || !address1 || !city || !state || !zipCode || skills.length === 0 || !availability) {
+    if (!firstName || !lastName || !address1 || !city || !state || !zipCode || skills.length === 0 || !availability) {
       alert('Please fill out all required fields!');
     } else {
       // Check if availability is a valid Date object before formatting
-      const formattedAvailability = availability instanceof Date ? availability.toISOString() : null;
+      const formattedAvailability = Array.isArray(availability)
+      ? availability.map(date => date.toISOString())  // Array of dates
+      : availability instanceof Date
+      ? availability.toISOString()  // Single date
+      : [];
+
+      console.log('Sending availability:', formattedAvailability);
+
 
       const profileData = {
         page_loc: 'VolunteerProfile',
-        fullName,
+        firstName,
+        lastName,
         address1,
         address2,
         city,
@@ -180,9 +190,18 @@ const Profile = () => {
           <>
             <input
               type="text"
-              placeholder="Full Name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              maxLength="50"
+              required
+              style={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               maxLength="50"
               required
               style={styles.input}

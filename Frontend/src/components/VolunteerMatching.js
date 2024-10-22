@@ -7,7 +7,6 @@ const EventList = () => {
   const [data, setData] = useState({});
   const { socket, sendMessage } = useWebSocket();
   const hasSentMessage = useRef(false); 
-  var message = {};
   const userEmail = localStorage.getItem('userEmail');
 
   useEffect(() => {
@@ -117,7 +116,6 @@ const EventList = () => {
   };
 
   return (
-  
     <div className="event-container">
       <div id="NavContainer"></div>
       <div id="formMatching">
@@ -130,25 +128,25 @@ const EventList = () => {
         <div className="dynamic-box">
           {Object.values(data).map((user) => (
             <div
-              key={user.eventID}
+              key={user.eventID}  // Ensure unique key
               className="card disable-select"
               onClick={() => showPopup(user, user.eventID, user.ifRSVP, user.ifMatched)}
             >
 
-                <div
-                  className="userProfileMatch"
-                  style={{backgroundColor: user.ifMatched ? 'rgb(66, 231, 45)' : 'red',}}>
-                  {user.ifMatched ? (
-                    <span title="You matched the request for this event">&#9989;&nbsp;matched&nbsp;</span>
-                  ) : (
-                    <span title="You do not match the request for this event">&#10060;&nbsp;not matched&nbsp;</span>
-                  )}
-                </div>
+              <div
+                className="userProfileMatch"
+                style={{backgroundColor: user.ifMatched ? 'rgb(66, 231, 45)' : 'red',}}>
+                {user.ifMatched ? (
+                  <span title="You matched the request for this event">&#9989;&nbsp;matched&nbsp;</span>
+                ) : (
+                  <span title="You do not match the request for this event">&#10060;&nbsp;not matched&nbsp;</span>
+                )}
+              </div>
 
               <div className="eventImageHolder">
                 <img
                   className="eventImage"
-                  src={user.eventImage}
+                  src={user.eventImage || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTftcCEqozA1cVgSpO4A6mJ2i-zD8MGLH0f9w&s'}  // Default image
                   alt={user.eventName}
                 />
               </div>
@@ -157,6 +155,7 @@ const EventList = () => {
                   {user.eventName}
                 </div>
                 <div className="location">{user.location}</div>
+                <div className="urgency">Urgency level: {user.urgency}</div>
                 <div className="eventDate">
                   {new Date(user.eventDate).toLocaleString('en-US', {
                     year: 'numeric',

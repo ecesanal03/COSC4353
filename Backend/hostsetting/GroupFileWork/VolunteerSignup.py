@@ -1,7 +1,7 @@
 import json
 import re
-
-user_data_store = {}
+from hostsetting.models import UserCredentials
+from django.contrib.auth.hashers import make_password
 
 class VolunteerSignup:
     
@@ -19,9 +19,14 @@ class VolunteerSignup:
     @staticmethod
     def initialize_admins():
         for email, info in VolunteerSignup.admin_credentials.items():
-            if email not in user_data_store:
-                user_data_store[email] = info
-                print(f"Admin {email} added to user_data_store.")
+            # Use Django ORM to check if the user exists
+            if not UserCredentials.objects.filter(email=email).exists():
+                UserCredentials.objects.create(
+                    email=email,
+                    password=make_password(info['password']),  
+                    role=info['role']
+                )
+                print(f"Admin {email} added to UserCredentials model.")
     
     @staticmethod
     def validate_email(email):
@@ -34,13 +39,14 @@ class VolunteerSignup:
 
     @staticmethod
     def save_user_data(email, password):
-        if email in user_data_store:
+        if UserCredentials.objects.filter(email=email).exists():
             return {'status': 'error', 'message': 'Email already registered'}
         
-        user_data_store[email] = {
-            'password': password,
-            'role': 'user'  
-        }
+        UserCredentials.objects.create(
+            email=email,
+            password=make_password(password),  # Hash the password
+            role='volunteer'  # Default role for newly signed up users
+        )
         return {'status': 'success', 'message': 'User registered successfully'}
 
     @staticmethod
