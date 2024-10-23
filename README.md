@@ -1,4 +1,4 @@
-**Setup and running step, Vuong Duong****
+**Setup and running step****
 
 
 
