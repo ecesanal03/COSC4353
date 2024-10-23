@@ -12,19 +12,22 @@ npm i, npm install sweetalert-react, npm i react-datepicker, npm i react-select,
 
 
 **For Django install will need:**
-python -m pip install Django
-python -m pip install -U channels["daphne"]
-pip install ctime
-pip install datetime
-pip install pathlib
-pip install asgiref
-pip install pyserial
-pip install redmail
+
+python -m pip install Django &&
+python -m pip install -U channels["daphne"] &&
+pip install ctime &&
+pip install datetime &&
+pip install pathlib &&
+pip install asgiref &&
+pip install pyserial &&
+pip install redmail &&
+pip install psycopg2
 
 
 
 
 **To Run:**
+
 CD into Backend file first
 python manage.py runserver 0.0.0.0:8000
 
