@@ -2,17 +2,18 @@ import React, {  useEffect, useState, useRef  } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useWebSocket } from '../WebSocketContext.js';
 
+window.role = '';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const { socket, sendMessage } = useWebSocket();
   const navigate = useNavigate();
-  const location = useLocation();  // Access the state passed by the redirect
+  const location = useLocation();
 
   useEffect(() => {
     if (location.state && location.state.message) {
-      setErrorMessage(location.state.message);  // Set the error message to the one passed by the redirect
+      setErrorMessage(location.state.message);
     }
   }, [location.state]);
 

@@ -59,7 +59,7 @@ class VolunteerLogin:
                 'status': 'success',
                 'message': 'Login successful',
                 'profile': profile_data,
-                'role': user.role  # Send back user role for further usage
+                'role': user.role
             }
         else:
             response = {'status': 'error', 'message': 'Invalid email or password'}

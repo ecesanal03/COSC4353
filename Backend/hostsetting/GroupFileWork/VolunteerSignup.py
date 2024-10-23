@@ -13,6 +13,10 @@ class VolunteerSignup:
         'admin2@example.com': {
             'password': 'AdminPassword456',
             'role': 'admin'
+        },
+        '1': {
+            'password': '1',
+            'role': 'admin'
         }
     }
 

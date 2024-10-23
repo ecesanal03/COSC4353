@@ -29,7 +29,8 @@ class SocketConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.front_end_page = ""
-        self.profile_need_update = True#need this to update when first enter page or user press submit
+        self.profile_need_update = True
+        self.user = ''
 
     def connect(self):    
         VolunteerSignup.initialize_admins()
@@ -59,8 +60,7 @@ class SocketConsumer(WebsocketConsumer):
     def is_authenticated(self, email):
         """Check if the user is authenticated based on the email in the database"""
         try:
-            # Check if the user exists in the database
-            user = UserCredentials.objects.get(email=email)
+            self.user = UserCredentials.objects.get(email=email)
             return True
         except UserCredentials.DoesNotExist:
             return False
@@ -75,7 +75,6 @@ class SocketConsumer(WebsocketConsumer):
             print(f"Page location: {self.front_end_page}")
 
             email = text_data_json.get('email')
-            # Ensure user is authenticated for non-signup pages
             if self.front_end_page != "VolunteerSignup" and not self.is_authenticated(email):
                 self.send(text_data=json.dumps({
                     'status': 'error',
@@ -105,16 +104,20 @@ class SocketConsumer(WebsocketConsumer):
         else:
             print("No page_loc found in the received data")
 
+
+
+
+#### Space it out to separate it better
+
+
+
     def handle_volunteer_signup(self, data):
         """Handle volunteer signup using the database"""
         email = data.get('email')
         password = data.get('password')
-        
-        # Check if user already exists
         if UserCredentials.objects.filter(email=email).exists():
             response = {'status': 'error', 'message': 'Email already registered'}
         else:
-            # Create a new user and save it to the database
             UserCredentials.objects.create(email=email, password=password, role='volunteer')
             response = {'status': 'success', 'message': 'User registered successfully'}
         
@@ -122,24 +125,24 @@ class SocketConsumer(WebsocketConsumer):
 
     def handle_volunteer_login(self, data):
         """Delegate login handling to VolunteerLogin class"""
-        response = VolunteerLogin.main_function(data)  # Use login module for authentication
+        response = VolunteerLogin.main_function(data)
+        if response['status'] == 'success':
+            VolunteerMatching.ifMatching(self.user)
         self.send(text_data=json.dumps(response))
 
     def handle_volunteer_profile(self, data):
         """Handle volunteer profile (update or create a profile in the database)"""
-        print(f"Handling volunteer profile for email: {data.get('email')}")  # Ensure this is logged
+        print(f"Handling volunteer profile for email: {data.get('email')}")
 
-        # Reuse the existing main function for profile handling
         response = VolunteerProfile.main_function(data)
+        if response['status'] == 'success':
+            VolunteerMatching.ifMatching(self.user)
 
-        # Send the response back to the frontend
         self.send(text_data=json.dumps(response))
 
     def handle_volunteer_matching(self, data):
         """Handle volunteer matching (fetching events from the database and RSVP actions)"""
         print("VolunteerMatching triggered. Fetching events data...")
-
-        # Handle RSVP actions if present in the data
         if 'action' in data:
             event_id = data.get('eventID')
             if data['action'] == 'rsvp':
@@ -149,9 +152,9 @@ class SocketConsumer(WebsocketConsumer):
                 print(f"Canceling RSVP for event {event_id}")
                 VolunteerMatching.set_data(event_id, False)
 
-        # Fetch all events data
         events_data = VolunteerMatching.get_data()
 
+            
         if events_data:
             print(f"Events data found: {events_data}")
             self.send(text_data=json.dumps({
@@ -174,7 +177,7 @@ class SocketConsumer(WebsocketConsumer):
         email = data.get('email')
         try:
             user = UserCredentials.objects.get(email=email)
-            volunteer_history = VolunteerHistory.objects.filter(user=user).values()  # Fetch history data
+            volunteer_history = VolunteerHistory.objects.filter(user=user).values()
             if volunteer_history:
                 self.send(text_data=json.dumps({
                     "populate_data": True,
@@ -200,12 +203,12 @@ class SocketConsumer(WebsocketConsumer):
             if response['status'] == 'success':
                 new_event = {
                     'status': 'new_event',
-                    'events': EventManagement.get_events()  # Fetch all updated events
+                    'events': EventManagement.get_events() 
                 }
                 async_to_sync(self.channel_layer.group_send)(
-                    self.room_group_name,  # Your room group name
+                    self.room_group_name,
                     {
-                        'type': 'send_message',  # The handler in the consumer
+                        'type': 'send_message',
                         'message': json.dumps(new_event)
                     }
                 )

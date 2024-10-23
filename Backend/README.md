@@ -9,7 +9,7 @@ pip install pathlib
 pip install asgiref
 pip install pyserial
 pip install redmail
-
+pip install psycopg2
 
 RUN USING: python manage.py runserver 0.0.0.0:8000
 

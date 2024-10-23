@@ -1,48 +1,56 @@
-// Sidebar.js
-import React from 'react';
-import { FaCalendarAlt, FaUsers, FaHistory, FaHome, FaSignOutAlt, FaUser } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaCalendarAlt, FaUsers, FaHistory, FaSignOutAlt, FaUser } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
-    const navigate = useNavigate();
-  
-    const handleLogout = () => {
-      // Clear session or auth data if needed (e.g., localStorage.clear())
-      localStorage.removeItem('authToken'); // Example: removing a token
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userProfile');
-  
-      // Redirect to the login page
-      navigate('/');
-    };
-  
-    return (
-      <div style={styles.sidebarContainer}>
-        <h2 style={styles.logo}>Volunteer Management</h2>
-        <ul style={styles.navList}>
-          <li style={styles.navItem}>
-            <Link to="/profile" style={styles.navLink}><FaUser style={styles.icon} />Profile</Link>
-          </li>
+  const [userRole, setUserRole] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const temp = localStorage.getItem('userRole');
+    if (temp) {
+      setUserRole(temp.toLowerCase());
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userProfile');
+    navigate('/');
+  };
+
+  return (
+    <div style={styles.sidebarContainer}>
+      <h2 style={styles.logo}>Volunteer Management</h2>
+      <ul style={styles.navList}>
+        <li style={styles.navItem}>
+          <Link to="/profile" style={styles.navLink}><FaUser style={styles.icon} />Profile</Link>
+        </li>
+
+        {userRole === 'admin' && (
           <li style={styles.navItem}>
             <Link to="/event-management" style={styles.navLink}><FaCalendarAlt style={styles.icon} />Event Management</Link>
           </li>
-          <li style={styles.navItem}>
-            <Link to="/volunteer-matching" style={styles.navLink}><FaUsers style={styles.icon} />Volunteer Matching</Link>
-          </li>
-          <li style={styles.navItem}>
-            <Link to="/volunteer-history" style={styles.navLink}><FaHistory style={styles.icon} />Volunteer History</Link>
-          </li>
-          <li style={styles.navItem} onClick={handleLogout}>
-            <span style={styles.navLink}><FaSignOutAlt style={styles.icon} />Logout</span>
-          </li>
-        </ul>
-      </div>
-    );
-  };
+        )}
+
+        <li style={styles.navItem}>
+          <Link to="/volunteer-matching" style={styles.navLink}><FaUsers style={styles.icon} />Volunteer Matching</Link>
+        </li>
+        <li style={styles.navItem}>
+          <Link to="/volunteer-history" style={styles.navLink}><FaHistory style={styles.icon} />Volunteer History</Link>
+        </li>
+        <li style={styles.navItem} onClick={handleLogout}>
+          <span style={styles.navLink}><FaSignOutAlt style={styles.icon} />Logout</span>
+        </li>
+      </ul>
+    </div>
+  );
+};
 
 const styles = {
   sidebarContainer: {
-    position:'fixed',
+    position: 'fixed',
     backgroundColor: '#3A7CA5',
     color: '#fff',
     height: '100vh',
@@ -80,4 +88,3 @@ const styles = {
 };
 
 export default Sidebar;
-
