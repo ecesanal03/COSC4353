@@ -2,7 +2,6 @@ import React, {  useEffect, useState, useRef  } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useWebSocket } from '../WebSocketContext.js';
 
-window.role = '';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
