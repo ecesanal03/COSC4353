@@ -15,23 +15,26 @@ const EventList = () => {
     if (socket) {
       const handleMessage = (event) => {
         console.log('WebSocket message received:', event.data);
-
+  
         const message = JSON.parse(event.data);
         console.log('Parsed message:', message);
-
+  
         if (message.status === 'new_event' && message.events) {
           console.log('New event data received:', message.events);
           setData(message.events);  // Update the state with the new event list
         } else if (message.hasOwnProperty('events')) {
           setData(message.events);
           console.log('Events data set to state:', message.events);
+        } else if (message.page_loc === 'VolunteerMatching' && message.events) {
+          // Only update state if it’s confirmed from 'VolunteerMatching' page
+          setData(message.events);
         } else {
           console.log('No events found in the message');
         }
       };
       
       socket.onmessage = handleMessage;
-
+  
       // Initial fetch of events
       if (!hasSentMessage.current && userEmail) {
         console.log('Sending message to fetch events: { page_loc: "VolunteerMatching", email: userEmail }');
@@ -40,7 +43,7 @@ const EventList = () => {
       } else if (!userEmail) {
         console.log('No user email found. Please log in.');
       }
-
+  
       return () => {
         socket.onmessage = null;
       };
@@ -55,7 +58,7 @@ const EventList = () => {
       },
       buttonsStyling: true
     });
-
+  
     if (ifRSVP) {
       swalWithBootstrapButtons.fire({
         title: "RSVP'ed",
@@ -66,15 +69,11 @@ const EventList = () => {
         showCloseButton: true
       }).then((result) => {
         if (result.isConfirmed) {
-          setData((prevData) => ({
-            ...prevData,
-            [eventID]: { ...prevData[eventID], ifRSVP: false }
-          }));
           sendMessage({
-            page_loc: 'VolunteerMatching',  // Add this field
+            page_loc: 'VolunteerMatching',  
             eventID: eventID,
             action: 'cancel_rsvp',  
-            email: userEmail  // Include user email for authentication
+            email: userEmail  
           });
           swalWithBootstrapButtons.fire({
             title: 'Canceled!',
@@ -94,15 +93,11 @@ const EventList = () => {
         showCloseButton: true
       }).then((result) => {
         if (result.isConfirmed) {
-          setData((prevData) => ({
-            ...prevData,
-            [eventID]: { ...prevData[eventID], ifRSVP: true }
-          }));
           sendMessage({
-            page_loc: 'VolunteerMatching',  // Add this field
+            page_loc: 'VolunteerMatching',  
             eventID: eventID,
             action: 'rsvp',  
-            email: userEmail  // Include user email for authentication
+            email: userEmail  
           });
           swalWithBootstrapButtons.fire({
             title: "RSVP'ed!",
