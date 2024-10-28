@@ -64,8 +64,6 @@ class EventDetails(models.Model):
     event_date = models.DateTimeField()
     creator_email = models.EmailField()  
     event_image = models.URLField()  
-    if_rsvp = models.BooleanField(default=False)
-    if_matched = models.BooleanField(default=False)
 
     def __str__(self):
         return self.event_name
@@ -76,9 +74,13 @@ class VolunteerHistory(models.Model):
     user = models.ForeignKey(UserCredentials, on_delete=models.CASCADE)
     event = models.ForeignKey(EventDetails, on_delete=models.CASCADE)
     participation_status = models.BooleanField(default=False)
+    matched_status = models.BooleanField(default=False)  # Matching status
+
+    class Meta:
+        unique_together = ('user', 'event')  # Ensures unique RSVP status per user-event
 
     def __str__(self):
-        return f"{self.user.email} - {self.event.event_name}"
+        return f"{self.user.email} - {self.event.event_name} RSVP: {self.participation_status}"
 
 
 # States table

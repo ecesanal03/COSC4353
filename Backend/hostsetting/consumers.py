@@ -15,6 +15,7 @@ from hostsetting.GroupFileWork.VolunteerLogin import VolunteerLogin
 from hostsetting.GroupFileWork.VolunteerProfile import VolunteerProfile
 from hostsetting.GroupFileWork.VolunteerManagement import EventManagement
 from hostsetting.GroupFileWork.VolunteerMatching import VolunteerMatching
+from hostsetting.GroupFileWork.VolunteerHistory import VolunteerRSVPHandler
 from hostsetting.models import UserCredentials, EventDetails, VolunteerHistory, UserProfile
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.hashers import check_password
@@ -112,7 +113,7 @@ class SocketConsumer(WebsocketConsumer):
 
 
     def handle_volunteer_signup(self, data):
-        """Handle volunteer signup using the database"""
+        """Handle volunteer signup."""
         email = data.get('email')
         password = data.get('password')
         if UserCredentials.objects.filter(email=email).exists():
@@ -121,78 +122,50 @@ class SocketConsumer(WebsocketConsumer):
             UserCredentials.objects.create(email=email, password=password, role='volunteer')
             response = {'status': 'success', 'message': 'User registered successfully'}
         
-        self.send(text_data=json.dumps(response))
+        self.send(json.dumps(response))
 
     def handle_volunteer_login(self, data):
-        """Delegate login handling to VolunteerLogin class"""
+        """Delegate login handling to VolunteerLogin class."""
         response = VolunteerLogin.main_function(data)
         if response['status'] == 'success':
-            VolunteerMatching.ifMatching(self.user)
-        self.send(text_data=json.dumps(response))
+            VolunteerMatching.if_matching(self.user.email)
+        self.send(json.dumps(response))
 
     def handle_volunteer_profile(self, data):
-        """Handle volunteer profile (update or create a profile in the database)"""
-        print(f"Handling volunteer profile for email: {data.get('email')}")
-
+        """Handle volunteer profile update."""
         response = VolunteerProfile.main_function(data)
         if response['status'] == 'success':
-            VolunteerMatching.ifMatching(self.user)
-
-        self.send(text_data=json.dumps(response))
+            VolunteerMatching.if_matching(self.user.email)
+        self.send(json.dumps(response))
 
     def handle_volunteer_matching(self, data):
-        """Handle volunteer matching (fetching events from the database and RSVP actions)"""
-        print("VolunteerMatching triggered. Fetching events data...")
+        """Handle volunteer matching for user-specific event fetching and RSVP actions."""
         if 'action' in data:
             event_id = data.get('eventID')
-            if data['action'] == 'rsvp':
-                print(f"RSVPing to event {event_id}")
-                VolunteerMatching.set_data(event_id, True)
-            elif data['action'] == 'cancel_rsvp':
-                print(f"Canceling RSVP for event {event_id}")
-                VolunteerMatching.set_data(event_id, False)
+            action = data['action']
+            if action == 'rsvp':
+                VolunteerMatching.set_rsvp_status(self.user, event_id, True)
+            elif action == 'cancel_rsvp':
+                VolunteerMatching.set_rsvp_status(self.user, event_id, False)
 
-        events_data = VolunteerMatching.get_data()
-
-            
-        if events_data:
-            print(f"Events data found: {events_data}")
-            self.send(text_data=json.dumps({
-                "populate_data": True,
-                "events": events_data
-            }))
-        else:
-            print("No events data found.")
-            self.send(text_data=json.dumps({
-                "populate_data": False,
-                "message": "No events available."
-            }))
+        # Fetch user-specific events and statuses
+        events_data = VolunteerMatching.get_user_events(self.user)
+        self.send(json.dumps({
+            "populate_data": True,
+            "events": events_data
+        }))
 
     def get_all_events(self):
         """Fetch all events from the database"""
         return EventManagement.get_events()
 
     def handle_volunteer_history(self, data):
-        """Handle volunteer history (fetching participation history from the database)"""
-        email = data.get('email')
-        try:
-            user = UserCredentials.objects.get(email=email)
-            volunteer_history = VolunteerHistory.objects.filter(user=user).values()
-            if volunteer_history:
-                self.send(text_data=json.dumps({
-                    "populate_data": True,
-                    "events": list(volunteer_history)
-                }))
-            else:
-                self.send(text_data=json.dumps({
-                    "populate_data": False,
-                    "message": "No volunteer history available."
-                }))
-        except UserCredentials.DoesNotExist:
-            self.send(text_data=json.dumps({
-                "status": "error",
-                "message": "User not found"
-            }))
+        """Handle volunteer history display for the logged-in user."""
+        volunteer_history = VolunteerMatching.get_user_events(self.user)
+        if volunteer_history:
+            self.send(json.dumps({"populate_data": True, "events": volunteer_history}))
+        else:
+            self.send(json.dumps({"populate_data": False, "message": "No volunteer history available."}))
 
     def handle_event_management(self, data):
         """Handle event management (create, fetch, update events in the database)"""

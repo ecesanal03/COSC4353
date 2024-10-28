@@ -86,7 +86,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'VolunteerManagement',  # Your PostgreSQL database name
         'USER': 'postgres',
-        'PASSWORD': '261101',  # Your PostgreSQL password
+        'PASSWORD': 'Qweasdzxc1$',  # Your PostgreSQL password
         'HOST': 'localhost',  # If using locally, otherwise provide your DB host
         'PORT': '5432',
     }
