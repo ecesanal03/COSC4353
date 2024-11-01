@@ -27,7 +27,7 @@ pip install psycopg2
 
 
 **To Run:**
-
+***If it's first time running, Server will also need to set up database, use password value in Database in setting.py of Backend DBeaver passport before attenmpting migration using "python manage.py migrate"***
 CD into Backend file first
 python manage.py runserver 0.0.0.0:8000
 
