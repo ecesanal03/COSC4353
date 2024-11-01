@@ -23,13 +23,19 @@ pip install pyserial &&
 pip install redmail &&
 pip install psycopg2
 
+**Set Up Database Before Running**
+OPTIONAL: Use DBeaver to view the database
 
+In this application, we used Python's ORM (Object Relational Mapping) to create our models and migrate it to the database (can view the models in the models.py file)
 
+In the settings.py file, change the database password with your own database password and save the project. Also create the database with the exact database name and username (Dbeaver highly recommended)
+
+Before running, please use command "python manage.py migrate" to migrate the models to PostgreSQL.
 
 **To Run:**
-***If it's first time running, Server will also need to set up database, use password value in Database in setting.py of Backend DBeaver passport before attenmpting migration using "python manage.py migrate"***
 CD into Backend file first
 python manage.py runserver 0.0.0.0:8000
 
 CD into frontend file
 npm start
+
