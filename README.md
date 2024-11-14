@@ -8,7 +8,7 @@ If already set up, ignore this step:
 
 react i
 react i react-scripts
-npm i, npm install sweetalert-react, npm i react-datepicker, npm i react-select, npm i date-fns,npm install react-icons, npm i react-router-dom@latest
+npm i, npm install sweetalert-react, npm i react-datepicker, npm i react-select, npm i date-fns,npm install react-icons, npm i react-router-dom@latest, npm install jspdf papaparse
 
 
 **For Django install will need:**

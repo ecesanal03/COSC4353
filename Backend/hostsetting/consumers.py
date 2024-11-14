@@ -101,7 +101,21 @@ class SocketConsumer(WebsocketConsumer):
 
             elif self.front_end_page == "VolunteerHistory":
                 self.handle_volunteer_history(text_data_json)
-
+        
+        elif 'action' in text_data_json:#for pdf_ csv download
+            print('test')
+            if text_data_json['action'] == 'request_pdf_data':
+                events_data = VolunteerMatching.get_user_events(self.user)
+                self.send(json.dumps({
+                    "action": 'send_pdf_data',
+                    "events": events_data
+                }))
+            elif text_data_json['action'] == 'request_csv_data':
+                events_data = VolunteerMatching.get_user_events(self.user)
+                self.send(json.dumps({
+                    "action": 'send_csv_data',
+                    "events": events_data
+                }))
         else:
             print("No page_loc found in the received data")
 

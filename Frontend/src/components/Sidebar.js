@@ -44,6 +44,7 @@ const Sidebar = () => {
           <span style={styles.navLink}><FaSignOutAlt style={styles.icon} />Logout</span>
         </li>
       </ul>
+      {/* onClick={requestPDFData} */}
     </div>
   );
 };
@@ -85,6 +86,7 @@ const styles = {
   navItemHover: {
     backgroundColor: '#2a5a7b',
   },
+
 };
 
 export default Sidebar;
