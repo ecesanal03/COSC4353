@@ -37,7 +37,7 @@ class EventManagement:
             event_date=event_date,
             creator_email=creator_email,
             event_image=event_image,
-            if_rsvp=if_rsvp
+            # if_rsvp=if_rsvp
         )
 
         # Set the required skills using the set() method

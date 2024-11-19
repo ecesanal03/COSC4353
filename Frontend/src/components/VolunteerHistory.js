@@ -100,7 +100,7 @@ const VolunteerHistory = () => {
 
       if (!hasSentMessage.current && userEmail) {
         console.log('Sending message to fetch events: { page_loc: "VolunteerHistory", email: userEmail }');
-        sendMessage({ page_loc: 'VolunteerMatching', email: userEmail });
+        sendMessage({ page_loc: 'VolunteerHistory', email: userEmail });
         hasSentMessage.current = true;
       } else if (!userEmail) {
         console.log('No user email found. Please log in.');
