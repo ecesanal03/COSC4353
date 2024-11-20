@@ -102,20 +102,35 @@ class SocketConsumer(WebsocketConsumer):
             elif self.front_end_page == "VolunteerHistory":
                 self.handle_volunteer_history(text_data_json)
         
-        elif 'action' in text_data_json and self.front_end_page == "VolunteerHistory":#for pdf_ csv download
-            print('test')
-            if text_data_json['action'] == 'request_pdf_data':
-                events_data = VolunteerMatching.get_user_events(self.user)
-                self.send(json.dumps({
-                    "action": 'send_pdf_data',
-                    "events": events_data
-                }))
-            elif text_data_json['action'] == 'request_csv_data':
-                events_data = VolunteerMatching.get_user_events(self.user)
-                self.send(json.dumps({
-                    "action": 'send_csv_data',
-                    "events": events_data
-                }))
+        elif text_data_json['action'] == 'request_volunteer_history':
+            volunteer_data = VolunteerRSVPHandler.get_volunteers_participation()
+            self.send(json.dumps({
+                "action": "send_volunteer_history",
+                "volunteers": volunteer_data
+            }))
+
+        elif text_data_json['action'] == 'request_event_assignments':
+            event_data = VolunteerRSVPHandler.get_event_assignments()
+            self.send(json.dumps({
+                "action": "send_event_assignments",
+                "events": event_data
+            }))
+            
+        elif text_data_json['action'] == 'request_volunteer_history_csv':
+            volunteer_data = VolunteerRSVPHandler.get_volunteers_participation()
+            self.send(json.dumps({
+                "action": "send_volunteer_history_csv",
+                "volunteers": volunteer_data
+            }))
+
+        elif text_data_json['action'] == 'request_event_assignments_csv':
+            event_data = VolunteerRSVPHandler.get_event_assignments()
+            print("Sending Event Assignments CSV Data:", event_data)  # Debugging
+            self.send(json.dumps({
+                "action": "send_event_assignments_csv",
+                "events": event_data
+            }))
+
         else:
             print("No page_loc found in the received data")
 

@@ -67,3 +67,40 @@ class VolunteerRSVPHandler:
             "events": events
         }
         websocket.send(json.dumps(message))  # Send the data as a JSON message
+        
+    @staticmethod
+    def get_volunteers_participation():
+        """Fetch all volunteers and their participation history."""
+        data = []
+        histories = VolunteerHistory.objects.select_related('user', 'event')  # Prefetch related data
+        for history in histories:
+            data.append({
+                "volunteerEmail": history.user.email,
+                "eventName": history.event.event_name,
+                "eventLocation": history.event.location,
+                "eventDate": history.event.event_date.strftime("%Y-%m-%d %H:%M"),
+                "participationStatus": "RSVP'ed" if history.participation_status else "Not RSVP'ed",
+            })
+        return data
+
+    @staticmethod
+    def get_event_assignments():
+        """Fetch event details along with assigned volunteers."""
+        data = []
+        events = EventDetails.objects.prefetch_related('volunteerhistory_set__user')  # Prefetch related histories
+        for event in events:
+            assigned_volunteers = [
+                history.user.email for history in event.volunteerhistory_set.all()
+            ]
+            
+            print(f"Event: {event.event_name}")
+            print(f"Assigned Volunteers: {assigned_volunteers}")
+    
+            data.append({
+                "eventName": event.event_name,
+                "eventLocation": event.location,
+                "eventDate": event.event_date.strftime("%Y-%m-%d %H:%M"),
+                "urgency": event.urgency.capitalize(),
+                "assignedVolunteers": ", ".join(assigned_volunteers) if assigned_volunteers else [],
+            })
+        return data
